@@ -167,9 +167,11 @@ lgbm = LGBMClassifier(learning_rate=0.1)
 lgbm.fit(X, y)
 
 cross_val_score(lgbm, X, y, cv=5).mean()
+# -
+
+# # Generate output
 
 # +
-# Prepare output
 predictions = rf.predict(X_test)
 
 output = pd.DataFrame({'PassengerId': test.index, 'Survived': predictions})
