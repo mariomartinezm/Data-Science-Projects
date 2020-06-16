@@ -141,7 +141,7 @@ from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import make_pipeline
 
-svc = make_pipeline(StandardScaler(), SVC(C=1000))
+svc = make_pipeline(StandardScaler(), SVC(kernel='rbf', C=1000))
 svc.fit(X, y)
 
 cross_val_score(svc, X, y, cv=5).mean()
