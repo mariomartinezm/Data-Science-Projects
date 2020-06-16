@@ -145,6 +145,17 @@ svc = make_pipeline(StandardScaler(), SVC(kernel='rbf', C=1000))
 svc.fit(X, y)
 
 cross_val_score(svc, X, y, cv=5).mean()
+# -
+
+# # Extreme Gradient Boosting
+
+# +
+from xgboost import XGBClassifier
+
+xgb = XGBClassifier(learning_rate=0.1)
+xgb.fit(X, y)
+
+cross_val_score(xgb, X, y, cv=5).mean()
 
 # +
 # Prepare output
