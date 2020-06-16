@@ -156,6 +156,17 @@ xgb = XGBClassifier(learning_rate=0.1)
 xgb.fit(X, y)
 
 cross_val_score(xgb, X, y, cv=5).mean()
+# -
+
+# # Light Gradient Boosting
+
+# +
+from lightgbm import LGBMClassifier
+
+lgbm = LGBMClassifier(learning_rate=0.1)
+lgbm.fit(X, y)
+
+cross_val_score(lgbm, X, y, cv=5).mean()
 
 # +
 # Prepare output
