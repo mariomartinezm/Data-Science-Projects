@@ -93,6 +93,7 @@ test.loc[age_months.index, 'AgeuponOutcome'] = age_months
 test.loc[age_weeks.index, 'AgeuponOutcome'] = age_weeks
 test.loc[age_days.index, 'AgeuponOutcome'] = age_days
 
+test['AgeuponOutcome'] = test['AgeuponOutcome'].astype('Int64')
 test['AgeuponOutcome']
 # -
 
