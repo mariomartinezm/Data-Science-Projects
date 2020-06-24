@@ -30,11 +30,6 @@ test.head(10)
 
 # # Exploratory data analysis
 
-# Get columns with missing values:
-
-print([col for col in train.columns if train[col].isna().any()])
-print([col for col in test.columns if test[col].isna().any()])
-
 # Get the total number of outcome categories:
 
 train['OutcomeType'].value_counts()
@@ -52,11 +47,9 @@ train['AnimalType'].value_counts()
 train['Breed'].value_counts()
 
 
-# # Feature Engineering
+# # Data cleaning
 
-# ## Data cleaning
-
-# ### Measure age in days
+# ## Measure age in days
 
 # The column *AgeuponOutcome* contains the age of an animal at the time the corresponding outcome occurred. However the values for this column contains strings such as "2 years", "2 months", "3 weeks", etc. In order to use these values for training we need to convert them to a common numeric scale. To fix this, we can convert all values to days as follows:
 
@@ -99,6 +92,11 @@ test['AgeuponOutcome']
 
 # ## Missing Values
 
+# Get columns with missing values:
+
+print([col for col in train.columns if train[col].isna().any()])
+print([col for col in test.columns if test[col].isna().any()])
+
 # +
 from sklearn.impute import SimpleImputer
 
@@ -119,6 +117,8 @@ imp_cols_test = pd.DataFrame(si.transform(test[['AgeuponOutcome']]))
 train['AgeuponOutcome'] = imp_cols_train
 test['AgeuponOutcome'] = imp_cols_test
 # -
+
+# # Feature Engineering
 
 # ## One Hot Encoding
 
