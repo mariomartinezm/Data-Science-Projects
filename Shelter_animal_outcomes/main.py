@@ -142,3 +142,30 @@ for col in ohe_cols_train.columns:
 train.head(10)
 
 test.head(10)
+
+# # Feature Selection
+
+# +
+y = train['OutcomeType']
+
+features = ['AgeuponOutcome', 0, 1, 2, 3, 4, 5, 6]
+
+X_train = train[features]
+X_test = test[features]
+
+X_train.head(10)
+# -
+
+# # Random Forest
+
+# +
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import cross_val_score
+
+rf = RandomForestClassifier()
+rf.fit(X_train, y)
+
+cross_val_score(rf, X_train, y, cv=5).mean()
+# -
+
+
