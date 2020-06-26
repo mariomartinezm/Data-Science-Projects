@@ -30,6 +30,8 @@ test.head(10)
 
 # # Data cleaning
 
+# Before attempting any kind of analysis it is important to clean the data, e.g., to impute missing values or to perform transformations on the data so they may be used for statistical analysis or traning of a machine learning algorithm.
+
 # ## Measure age in days
 
 # The column *AgeuponOutcome* contains the age of an animal at the time the corresponding outcome occurred. However the values for this column contains strings such as "2 years", "2 months", "3 weeks", etc. In order to use these values for training we need to convert them to a common numeric scale. To fix this, we can convert all values to days as follows:
@@ -69,18 +71,6 @@ test.loc[age_days.index, 'AgeuponOutcome'] = age_days
 
 test['AgeuponOutcome'] = test['AgeuponOutcome'].astype('Int64')
 test['AgeuponOutcome']
-# -
-
-# It is now possible to inspect the distribution of the *AgeuponOutcome* column:
-
-# +
-fig, ax = plt.subplots(1, 2)
-
-fig.set_figheight(5)
-fig.set_figwidth(15)
-
-sns.distplot(train['AgeuponOutcome'] / 365, bins=20, kde=True, ax=ax[0])
-sns.distplot(test['AgeuponOutcome'] / 365, bins=20, kde=True, ax=ax[1])
 # -
 
 # ## Missing Values
@@ -131,16 +121,28 @@ for i, feature in enumerate(train[features]):
     train[feature].value_counts().plot(kind='bar', ax=ax[i]).set_title(feature)
 # -
 
-# From these plots it is easy to conclude that most animals were given into adoption or transfered, also the numbers of males and females is similar, and most animals are dogs. It is also possible to compute the proportion of males and females that died while being in the shelter:
+# After transforming the column *AgeuponOutcome* we can obtain its distribution as follows:
+
+# +
+fig, ax = plt.subplots(1, 2)
+
+fig.set_figheight(5)
+fig.set_figwidth(15)
+
+sns.distplot(train['AgeuponOutcome'] / 365, bins=20, kde=True, ax=ax[0])
+sns.distplot(test['AgeuponOutcome'] / 365, bins=20, kde=True, ax=ax[1])
+# -
+
+# From these plots we can conclude that most animals in the shelter (most of them dogs) are quite young, at most 5 years old. Fortunately, only a small portion of the animals died or were sacrificed during their stance at the shelter. In order to understand the conditions that lead to an animal not being adopted it is critical to investigate the demographics of the populations, e.g., the rate of death between species or between sexes:
 
 # +
 males = train[train['SexuponOutcome'].str.contains('Male')]
 males_dead = train[train['SexuponOutcome'].str.contains('Male') & train['OutcomeType'].isin(['Euthanasia', 'Died'])]
-print('Males that died: {}'.format(len(males_dead) / len(males)))
+print('Percentage of males dead: {}'.format(len(males_dead) / len(males)))
 
 females = train[train['SexuponOutcome'].str.contains('Female')]
 females_dead = train[train['SexuponOutcome'].str.contains('Female') & train['OutcomeType'].isin(['Euthanasia', 'Died'])]
-print(len(females_dead) / len(females))
+print('Percentage of females dead: {}'.format(len(females_dead) / len(females)))
 
 train['OutcomeType'].isin(['Euthanasia', 'Died'])
 # -
