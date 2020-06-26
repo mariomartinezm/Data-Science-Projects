@@ -28,45 +28,6 @@ train.head(10)
 test = pd.read_csv('../../Datasets/shelter-animal-outcomes/test.csv.gz', index_col=0)
 test.head(10)
 
-# # Exploratory data analysis
-
-# The data contains several categorical variables (*SexUponOutcome*, *Breed*, *Color*, etc), the corresponding distrubution can be obtained as follows:
-
-# +
-import matplotlib.pyplot as plt
-import seaborn as sns
-sns.set()
-
-features = ['OutcomeType', 'SexuponOutcome', 'AnimalType']
-
-fig, ax = plt.subplots(1, len(features))
-
-fig.set_figheight(5)
-fig.set_figwidth(15)
-
-for i, feature in enumerate(train[features]):
-    train[feature].value_counts().plot(kind='bar', ax=ax[i]).set_title(feature)
-# -
-
-# From these plots it is easy to conclude that most animals were given into adoption or transfered, also the numbers of males and females is similar, and most animals are dogs. It is also possible to compute the proportion of males and females that died while being in the shelter:
-
-# +
-males = train[train['SexuponOutcome'].str.contains('Male')]
-males_dead = train[train['SexuponOutcome'].str.contains('Male') & train['OutcomeType'].isin(['Euthanasia', 'Died'])]
-print('Males that died: {}'.format(len(males_dead) / len(males)))
-
-females = train[train['SexuponOutcome'].str.contains('Female')]
-females_dead = train[train['SexuponOutcome'].str.contains('Female') & train['OutcomeType'].isin(['Euthanasia', 'Died'])]
-print(len(females_dead) / len(females))
-
-train['OutcomeType'].isin(['Euthanasia', 'Died'])
-# -
-
-# So only a small proportion of animals died, with males having a slightly greater death rate.
-
-train['Breed'].value_counts()
-
-
 # # Data cleaning
 
 # ## Measure age in days
@@ -149,6 +110,44 @@ imp_cols_test = pd.DataFrame(si.transform(test[['AgeuponOutcome']]))
 train['AgeuponOutcome'] = imp_cols_train
 test['AgeuponOutcome'] = imp_cols_test
 # -
+
+# # Exploratory data analysis
+
+# The data contains several categorical variables (*SexUponOutcome*, *Breed*, *Color*, etc), the corresponding distrubution can be obtained as follows:
+
+# +
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set()
+
+features = ['OutcomeType', 'SexuponOutcome', 'AnimalType']
+
+fig, ax = plt.subplots(1, len(features))
+
+fig.set_figheight(5)
+fig.set_figwidth(15)
+
+for i, feature in enumerate(train[features]):
+    train[feature].value_counts().plot(kind='bar', ax=ax[i]).set_title(feature)
+# -
+
+# From these plots it is easy to conclude that most animals were given into adoption or transfered, also the numbers of males and females is similar, and most animals are dogs. It is also possible to compute the proportion of males and females that died while being in the shelter:
+
+# +
+males = train[train['SexuponOutcome'].str.contains('Male')]
+males_dead = train[train['SexuponOutcome'].str.contains('Male') & train['OutcomeType'].isin(['Euthanasia', 'Died'])]
+print('Males that died: {}'.format(len(males_dead) / len(males)))
+
+females = train[train['SexuponOutcome'].str.contains('Female')]
+females_dead = train[train['SexuponOutcome'].str.contains('Female') & train['OutcomeType'].isin(['Euthanasia', 'Died'])]
+print(len(females_dead) / len(females))
+
+train['OutcomeType'].isin(['Euthanasia', 'Died'])
+# -
+
+# So only a small proportion of animals died, with males having a slightly greater death rate.
+
+train['Breed'].value_counts()
 
 # # Feature Engineering
 
