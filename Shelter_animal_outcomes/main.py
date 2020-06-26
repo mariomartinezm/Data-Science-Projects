@@ -30,19 +30,39 @@ test.head(10)
 
 # # Exploratory data analysis
 
-# Get the total number of outcome categories:
+# The data contains several categorical variables (*SexUponOutcome*, *Breed*, *Color*, etc), the corresponding distrubution can be obtained as follows:
 
-train['OutcomeType'].value_counts()
+# +
+import matplotlib.pyplot as plt
+import seaborn as sns
+sns.set()
 
-# Get the number of sex categories
+features = ['OutcomeType', 'SexuponOutcome', 'AnimalType']
 
-train['SexuponOutcome'].value_counts()
+fig, ax = plt.subplots(1, len(features))
 
-# Get the number of 'AnimalType' categories:
+fig.set_figheight(5)
+fig.set_figwidth(15)
 
-train['AnimalType'].value_counts()
+for i, feature in enumerate(train[features]):
+    train[feature].value_counts().plot(kind='bar', ax=ax[i]).set_title(feature)
+# -
 
-# Get the number of 'Breed' categories:
+# From these plots it is easy to conclude that most animals were given into adoption or transfered, also the numbers of males and females is similar, and most animals are dogs. It is also possible to compute the proportion of males and females that died while being in the shelter:
+
+# +
+males = train[train['SexuponOutcome'].str.contains('Male')]
+males_dead = train[train['SexuponOutcome'].str.contains('Male') & train['OutcomeType'].isin(['Euthanasia', 'Died'])]
+print('Males that died: {}'.format(len(males_dead) / len(males)))
+
+females = train[train['SexuponOutcome'].str.contains('Female')]
+females_dead = train[train['SexuponOutcome'].str.contains('Female') & train['OutcomeType'].isin(['Euthanasia', 'Died'])]
+print(len(females_dead) / len(females))
+
+train['OutcomeType'].isin(['Euthanasia', 'Died'])
+# -
+
+# So only a small proportion of animals died, with males having a slightly greater death rate.
 
 train['Breed'].value_counts()
 
@@ -88,6 +108,18 @@ test.loc[age_days.index, 'AgeuponOutcome'] = age_days
 
 test['AgeuponOutcome'] = test['AgeuponOutcome'].astype('Int64')
 test['AgeuponOutcome']
+# -
+
+# It is now possible to inspect the distribution of the *AgeuponOutcome* column:
+
+# +
+fig, ax = plt.subplots(1, 2)
+
+fig.set_figheight(5)
+fig.set_figwidth(15)
+
+sns.distplot(train['AgeuponOutcome'] / 365, bins=20, kde=True, ax=ax[0])
+sns.distplot(test['AgeuponOutcome'] / 365, bins=20, kde=True, ax=ax[1])
 # -
 
 # ## Missing Values
