@@ -103,7 +103,7 @@ test['AgeuponOutcome'] = imp_cols_test
 
 # # Exploratory data analysis
 
-# The data contains several categorical variables (*SexUponOutcome*, *Breed*, *Color*, etc), the corresponding distrubution can be obtained as follows:
+# The data contains several categorical variables (*SexUponOutcome*, *Breed*, *Color*, etc), the corresponding distribution can be obtained as follows:
 
 # +
 import matplotlib.pyplot as plt
@@ -133,7 +133,27 @@ sns.distplot(train['AgeuponOutcome'] / 365, bins=20, kde=True, ax=ax[0])
 sns.distplot(test['AgeuponOutcome'] / 365, bins=20, kde=True, ax=ax[1])
 # -
 
-# From these plots we can conclude that most animals in the shelter (most of them dogs) are quite young, at most 5 years old. Fortunately, only a small portion of the animals died or were sacrificed during their stance at the shelter. In order to understand the conditions that lead to an animal not being adopted it is critical to investigate the demographics of the populations, e.g., the rate of death between species or between sexes:
+# From these plots we can conclude that most animals in the shelter (most of them dogs) are quite young, at most 5 years old. Fortunately, only a small portion of the animals died or were sacrificed during their stance at the shelter. In order to understand the conditions that lead to an animal not being adopted it is critical to investigate the demographics of the populations, e.g., the percentage of males and females that were adopted.
+
+# +
+adopted = train[train['OutcomeType'] == 'Adoption']
+
+males_adopted = train[(train['OutcomeType'] == 'Adoption') & (train['SexuponOutcome'].str.contains('Male'))]
+females_adopted = train[(train['OutcomeType'] == 'Adoption') & (train['SexuponOutcome'].str.contains('Female'))]
+
+total_adopted = len(adopted)
+print('Percentage of males adopted = {}'.format(round(len(males_adopted) / total_adopted * 100, 2)))
+print('Percentage of females adopted = {}'.format(round(len(females_adopted) / total_adopted * 100, 2)))
+
+fig = plt.figure()
+
+plt.title('Adoption by sex')
+
+plt.pie([len(males_adopted), len(females_adopted)],
+        labels=['Males adopted', 'Females adopted'],
+        autopct='%1.2f%%')
+
+plt.plot()
 
 # +
 males = train[train['SexuponOutcome'].str.contains('Male')]
