@@ -5,11 +5,11 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.5.0
+#       jupytext_version: 1.6.0
 #   kernelspec:
-#     display_name: 'Python 3.7.6 64-bit (''venv'': venv)'
+#     display_name: Python 3
 #     language: python
-#     name: python37664bitvenvvenv8099a62852874eaebba06d1f38f49ab5
+#     name: python3
 # ---
 
 # + _cell_guid="b1076dfc-b9ad-4769-8c92-a6c4dae69d19" _uuid="8f2839f25d086af736a60e9eeb907d3b93b6e0e5"
@@ -134,6 +134,39 @@ rf.fit(X, y)
 cross_val_score(rf, X, y, cv=5).mean()
 # -
 
+# ## Learning Curves
+
+# +
+import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
+from sklearn.model_selection import learning_curve
+
+import seaborn as sns
+sns.set()
+
+estimators = [1, 10, 100, 1000]
+
+fig = plt.figure(constrained_layout=True, figsize=(10, 6))
+grid_spec = gridspec.GridSpec(nrows=2, ncols=2, figure=fig)
+
+for row in range(2):
+    for col in range(2):
+        n = estimators[2 * row + col]
+        N, train_lc, val_lc = learning_curve(RandomForestClassifier(n_estimators=n, max_depth=5, random_state=1),
+                                             X, y, cv=7)
+
+        ax = fig.add_subplot(grid_spec[row, col])
+
+        ax.plot(N, np.mean(train_lc, 1), color='blue', marker='.', label='training_score')
+        ax.plot(N, np.mean(val_lc, 1), color='red', marker='.', label='validation_score')
+        ax.hlines(np.mean([train_lc[-1], val_lc[-1]]), N[0], N[-1], color='gray', linestyle='dashed')
+
+        ax.set_xlabel('training size')
+        ax.set_ylabel('score')
+        ax.set_title(f'Estimators = {n}', size=14)
+        ax.legend(loc='best')
+# -
+
 # # Support Vector Machine
 
 # +
@@ -178,6 +211,3 @@ output = pd.DataFrame({'PassengerId': test.index, 'Survived': predictions})
 output.to_csv('output.csv', index=False)
 
 print('Done')
-# -
-
-
