@@ -167,6 +167,19 @@ for row in range(2):
         ax.legend(loc='best')
 # -
 
+# ## Grid Search
+
+# +
+from sklearn.model_selection import GridSearchCV
+
+param_grid = {'n_estimators': [1, 10, 100, 1000],
+              'max_depth': [5, 10, 15, 20]}
+
+grid = GridSearchCV(RandomForestClassifier(), param_grid)
+grid.fit(X, y)
+print(grid.best_params_)
+# -
+
 # # Support Vector Machine
 
 # +
