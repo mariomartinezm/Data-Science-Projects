@@ -122,21 +122,10 @@ X
 
 # # Random Forest
 
-# +
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import cross_val_score
-
-# Train and prediction
-rf = RandomForestClassifier(n_estimators=100, max_depth=5, random_state=1)
-rf.fit(X, y)
-
-# Cross-validation
-cross_val_score(rf, X, y, cv=5).mean()
-# -
-
 # ## Learning Curves
 
 # +
+from sklearn.ensemble import RandomForestClassifier
 import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
 from sklearn.model_selection import learning_curve
@@ -175,9 +164,21 @@ from sklearn.model_selection import GridSearchCV
 param_grid = {'n_estimators': [1, 10, 100, 1000],
               'max_depth': [5, 10, 15, 20]}
 
-grid = GridSearchCV(RandomForestClassifier(), param_grid)
+grid = GridSearchCV(RandomForestClassifier(random_state=1), param_grid, cv=7)
 grid.fit(X, y)
 print(grid.best_params_)
+# -
+
+# ## Training and Prediction
+
+# +
+from sklearn.model_selection import cross_val_score
+
+rf = grid.best_estimator_
+rf.fit(X, y)
+
+# Cross-validation
+cross_val_score(rf, X, y, cv=5).mean()
 # -
 
 # # Support Vector Machine
