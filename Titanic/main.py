@@ -65,6 +65,24 @@ X = X_imp
 X_test = X_test_imp
 # -
 
+X
+
+X_test
+
+# ## Scaling
+
+# +
+from sklearn import preprocessing
+
+preprocessing.scale(X['Fare'], copy=False)
+preprocessing.scale(X['Age'], copy=False)
+preprocessing.scale(X_test['Fare'], copy=False)
+preprocessing.scale(X_test['Age'], copy=False)
+X
+# -
+
+X_test
+
 # ## Categorical variables
 
 # +
@@ -164,7 +182,7 @@ from sklearn.model_selection import GridSearchCV
 param_grid = {'n_estimators': [1, 10, 100, 1000],
               'max_depth': [5, 10, 15, 20]}
 
-grid = GridSearchCV(RandomForestClassifier(random_state=1), param_grid, cv=7)
+grid = GridSearchCV(RandomForestClassifier(random_state=1), param_grid)
 grid.fit(X, y)
 print(grid.best_params_)
 # -
@@ -183,12 +201,23 @@ cross_val_score(rf, X, y, cv=5).mean()
 
 # # Support Vector Machine
 
+# ## Grid Search
+
 # +
 from sklearn.svm import SVC
-from sklearn.preprocessing import StandardScaler
-from sklearn.pipeline import make_pipeline
 
-svc = make_pipeline(StandardScaler(), SVC(kernel='rbf', C=1000))
+param_grid = {'C': [10, 100, 1000, 2000],
+             'kernel': ['rbf', 'sigmoid']}
+
+grid = GridSearchCV(SVC(), param_grid)
+grid.fit(X, y)
+grid.best_params_
+# -
+
+# ## Training and prediction
+
+# +
+svc = grid.best_estimator_
 svc.fit(X, y)
 
 cross_val_score(svc, X, y, cv=5).mean()
@@ -219,7 +248,7 @@ cross_val_score(lgbm, X, y, cv=5).mean()
 # # Generate output
 
 # +
-predictions = rf.predict(X_test)
+predictions = svc.predict(X_test)
 
 output = pd.DataFrame({'PassengerId': test.index, 'Survived': predictions})
 output.to_csv('output.csv', index=False)
