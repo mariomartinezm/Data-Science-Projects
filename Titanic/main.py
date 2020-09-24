@@ -119,7 +119,7 @@ X.head()
 # +
 from sklearn.feature_selection import SelectKBest, f_classif
 
-selector = SelectKBest(f_classif, k=6)
+selector = SelectKBest(f_classif, k=10)
 
 X_new = selector.fit_transform(X, y)
 
@@ -248,7 +248,7 @@ cross_val_score(lgbm, X, y, cv=5).mean()
 # # Generate output
 
 # +
-predictions = svc.predict(X_test)
+predictions = rf.predict(X_test)
 
 output = pd.DataFrame({'PassengerId': test.index, 'Survived': predictions})
 output.to_csv('output.csv', index=False)
