@@ -192,7 +192,8 @@ print(grid.best_params_)
 # +
 from sklearn.model_selection import cross_val_score
 
-rf = grid.best_estimator_
+# Train and prediction
+rf = RandomForestClassifier(n_estimators=100, max_depth=5, random_state=1)
 rf.fit(X, y)
 
 # Cross-validation
