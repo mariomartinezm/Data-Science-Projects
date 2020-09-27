@@ -54,7 +54,7 @@ X_test = test[features]
 # In order to use 'Age' as a feature we need to impute missing values
 from sklearn.impute import SimpleImputer
 
-imputer = SimpleImputer(strategy='mean')
+imputer = SimpleImputer(strategy='median')
 X_imp = pd.DataFrame(imputer.fit_transform(X))
 X_test_imp = pd.DataFrame(imputer.transform(X_test))
 
@@ -83,6 +83,20 @@ X
 
 X_test
 
+# ## New features
+
+X['Deck'] = [s[0] if not pd.isna(s) else 'M' for s in train['Cabin']]
+X['Deck'].replace(['A', 'B', 'C'], 'ABC', inplace=True)
+X['Deck'].replace(['D', 'E'], 'DE', inplace=True)
+X['Deck'].replace(['F', 'G'], 'FG', inplace=True)
+X
+
+X_test['Deck'] = [s[0] if not pd.isna(s) else 'M' for s in test['Cabin']]
+X_test['Deck'].replace(['A', 'B', 'C'], 'ABC', inplace=True)
+X_test['Deck'].replace(['D', 'E'], 'DE', inplace=True)
+X_test['Deck'].replace(['F', 'G'], 'FG', inplace=True)
+X_test
+
 # ## Categorical variables
 
 # +
@@ -90,6 +104,10 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.preprocessing import OneHotEncoder
 
 # Label encoding
+labelEncoder = LabelEncoder()
+X['Deck'] = labelEncoder.fit_transform(X['Deck'])
+X_test['Deck'] = labelEncoder.transform(X_test['Deck'])
+
 categorical = ['Sex', 'Embarked']
 
 imputer = SimpleImputer(strategy='most_frequent')
@@ -119,7 +137,7 @@ X.head()
 # +
 from sklearn.feature_selection import SelectKBest, f_classif
 
-selector = SelectKBest(f_classif, k=10)
+selector = SelectKBest(f_classif, k=11)
 
 X_new = selector.fit_transform(X, y)
 
@@ -193,7 +211,7 @@ print(grid.best_params_)
 from sklearn.model_selection import cross_val_score
 
 # Train and prediction
-rf = RandomForestClassifier(n_estimators=100, max_depth=5, random_state=1)
+rf = grid.best_estimator_
 rf.fit(X, y)
 
 # Cross-validation
@@ -255,3 +273,6 @@ output = pd.DataFrame({'PassengerId': test.index, 'Survived': predictions})
 output.to_csv('output.csv', index=False)
 
 print('Done')
+# -
+
+
