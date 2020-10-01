@@ -85,6 +85,12 @@ X_test
 
 # ## New features
 
+# +
+# X['AgeCat'] = pd.cut(X['Age'].astype(int), 5, labels=[0, 1, 2, 3, 4])
+# X_test['AgeCat'] = pd.cut(X_test['Age'].astype(int), 5, labels=[0, 1, 2, 3, 4])
+# X
+# -
+
 X['Deck'] = [s[0] if not pd.isna(s) else 'M' for s in train['Cabin']]
 X['Deck'].replace(['A', 'B', 'C'], 'ABC', inplace=True)
 X['Deck'].replace(['D', 'E'], 'DE', inplace=True)
@@ -97,6 +103,26 @@ X_test['Deck'].replace(['D', 'E'], 'DE', inplace=True)
 X_test['Deck'].replace(['F', 'G'], 'FG', inplace=True)
 X_test
 
+# +
+# X['Family'] = X['Parch'] + X['SibSp'] + 1
+# X
+
+# +
+# X_test['Family'] = X_test['Parch'] + X_test['SibSp'] + 1
+# X_test
+
+# +
+# X['Family'].hist()
+
+# +
+# X['FamilyCat'] = X['Family'].map(lambda s: 1 if s == 1 else (2 if s == 2 else (3 if 3 <= s <= 4 else (4 if s >= 5 else 0))))
+# X
+
+# +
+# X_test['FamilyCat'] = X_test['Family'].map(lambda s: 1 if s == 1 else (2 if s == 2 else (3 if 3 <= s <= 4 else (4 if s >= 5 else 0))))
+# X_test
+# -
+
 # ## Categorical variables
 
 # +
@@ -107,6 +133,9 @@ from sklearn.preprocessing import OneHotEncoder
 labelEncoder = LabelEncoder()
 X['Deck'] = labelEncoder.fit_transform(X['Deck'])
 X_test['Deck'] = labelEncoder.transform(X_test['Deck'])
+
+# X['Age'] = labelEncoder.fit_transform(X['Age'])
+# X_test['Age'] = labelEncoder.transform(X_test['Age'])
 
 categorical = ['Sex', 'Embarked']
 
@@ -211,7 +240,7 @@ print(grid.best_params_)
 from sklearn.model_selection import cross_val_score
 
 # Train and prediction
-rf = grid.best_estimator_
+rf = RandomForestClassifier(random_state=1, max_depth=10, n_estimators=1000)
 rf.fit(X, y)
 
 # Cross-validation
