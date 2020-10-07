@@ -95,7 +95,7 @@ for(col in colnames(X_test))
 # Add categorical variables to train and test data:
 
 # +
-categorical = c("MSZoning", "Neighborhood")
+categorical = c("MSZoning", "Neighborhood", "BldgType")
 
 for(col in categorical)
 {
@@ -161,7 +161,8 @@ model <- lm(SalePrice ~
             OverallCond +
             FullBath +
             PoolArea +
-            Neighborhood,   # <- Categorical varibles start here
+            Neighborhood +   # <- Categorical varibles start here
+            BldgType,
             data=X_train)
 summary(model)
 
