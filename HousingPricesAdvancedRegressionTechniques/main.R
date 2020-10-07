@@ -92,8 +92,6 @@ for(col in colnames(X_test))
     }
 }
 
-# ### Categorical Variables
-
 # Add categorical variables to train and test data:
 
 # +
@@ -109,6 +107,36 @@ head(X_train)
 # -
 
 head(X_test)
+
+# ### MSZoning
+
+# This variable identifies the general zoning classification of the sale. The *test* dataset contains some missing values for this variable, however, we can't simply impute using some statistic such as the global mode. Instead, it is better to impute using the mode of all rows having the same neighborhood as the rows having the missing values.
+#
+# First, it is neccesary to get the index of missing values from the **MSZoning** variable:
+
+which(is.na(X_test['MSZoning']))
+
+# Since there are only 4 missing values, we can inspect every row to determine the **Neighborhood** of every row with missing data.
+
+X_test[c(456, 757, 791, 1445), ]
+
+# The first three rows belong to the IDOTRR neighborhood, the last belongs to Mitchell.
+# Let's identify the most common value for the feature **MSZoning** when **Neighborhood** takes the value IDOTRR.
+
+test_idotrr <- X_test[X_test$Neighborhood == "IDOTRR", c("MSZoning")]
+summary(test_idotrr)
+
+# Finally, let's impute the data:
+
+X_test[c(456, 757, 791), "MSZoning"] <- "RM"
+
+# Let's repeat the process for the Mitchel neighborhood: 
+
+test_mitchel <- X_test[X_test$Neighborhood == "Mitchel", c("MSZoning")]
+summary(test_mitchel)
+
+X_test[c(1445), "MSZoning"] <- "RL"
+summary(X_test$MSZoning)
 
 # ## Linear Regression
 
@@ -133,8 +161,7 @@ model <- lm(SalePrice ~
             OverallCond +
             FullBath +
             PoolArea +
-            #MSZoning +    # <- Categorical varibles start here
-            Neighborhood,
+            Neighborhood,   # <- Categorical varibles start here
             data=X_train)
 summary(model)
 
