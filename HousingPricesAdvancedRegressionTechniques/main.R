@@ -30,6 +30,8 @@ head(test)
 
 summary(train)
 
+summary(test)
+
 # Since there are categorical features that are incorrectly read as numeric, it is necessary to transform the data:
 
 train <- transform(train, MSSubClass=as.factor(MSSubClass))
@@ -90,6 +92,24 @@ for(col in colnames(X_test))
     }
 }
 
+# ### Categorical Variables
+
+# Add categorical variables to train and test data:
+
+# +
+categorical = c("MSZoning", "Neighborhood")
+
+for(col in categorical)
+{
+    X_train[col] = train[col]
+    X_test[col] = test[col]
+}
+
+head(X_train)
+# -
+
+head(X_test)
+
 # ## Linear Regression
 
 # ### Training
@@ -112,7 +132,9 @@ model <- lm(SalePrice ~
             BsmtFullBath +
             OverallCond +
             FullBath +
-            PoolArea,
+            PoolArea +
+            #MSZoning +    # <- Categorical varibles start here
+            Neighborhood,
             data=X_train)
 summary(model)
 
