@@ -92,10 +92,76 @@ for(col in colnames(X_test))
     }
 }
 
-# Add categorical variables to train and test data:
+# ### MSZoning
+
+# This variable identifies the general zoning classification of the sale. The *test* dataset contains some missing values for this variable, however, we can't simply impute using some statistic such as the global mode. Instead, it is better to impute using the mode of all rows having the same neighborhood as the rows having the missing values.
+#
+# First, it is neccesary to get the index of missing values from the **MSZoning** variable:
+
+which(is.na(test['MSZoning']))
+
+# Since there are only 4 missing values, we can inspect every row to determine the **Neighborhood** of every row with missing data.
+
+test[c(456, 757, 791, 1445), "Neighborhood"]
+
+# The first three rows belong to the IDOTRR neighborhood, the last belongs to Mitchell.
+# Let's identify the most common value for the feature **MSZoning** when **Neighborhood** takes the value IDOTRR.
+
+test_idotrr <- test[test$Neighborhood == "IDOTRR", c("MSZoning")]
+summary(test_idotrr)
+
+# Finally, let's impute the data:
+
+test[c(456, 757, 791), "MSZoning"] <- "RM"
+
+# Let's repeat the process for the Mitchel neighborhood: 
+
+test_mitchel <- test[test$Neighborhood == "Mitchel", c("MSZoning")]
+summary(test_mitchel)
+
+test[c(1445), "MSZoning"] <- "RL"
+summary(test$MSZoning)
+
+# ### Electrical
+#
+# There is one row in the *training* data set with a missing value:
+
+summary(train$Electrical)
+
+# Let's determine the index where the missing value occurs:
+
+which(is.na(train["Electrical"]))
+
+# Finally let's impute it with the mode according to neighborhood:
+
+train[1380, c("Neighborhood", "Electrical")]
+
+train_timber <- train[train$Neighborhood == "Timber", c("Electrical")]
+summary(train_timber)
+
+train[1380, "Electrical"] <- "SBrkr"
+summary(train$Electrical)
+
+# ### GarageQual
+#
+# This categorical feature uses the string "NA" to represent one of its levels. To stop R from misinterpreting this value it is necessary to replace all occurences of "NA".
+
+train$GarageQual <- as.character(train$GarageQual)
+indices <- which(is.na(train$GarageQual))
+train$GarageQual[indices] <- "NoGarage"
+train$GarageQual = as.factor(train$GarageQual)
+summary(train$GarageQual)
+
+test$GarageQual <- as.character(test$GarageQual)
+indices <- which(is.na(test$GarageQual))
+test$GarageQual[indices] <- "NoGarage"
+test$GarageQual = as.factor(test$GarageQual)
+summary(test$GarageQual)
+
+# ### Add categorical variables to train and test data:
 
 # +
-categorical = c("MSZoning", "Neighborhood", "BldgType", "ExterQual", "ExterCond", "HeatingQC", "Electrical")
+categorical = c("MSZoning", "Neighborhood", "BldgType", "ExterQual", "ExterCond", "HeatingQC", "GarageQual")
 
 for(col in categorical)
 {
@@ -107,56 +173,6 @@ head(X_train)
 # -
 
 head(X_test)
-
-# ### MSZoning
-
-# This variable identifies the general zoning classification of the sale. The *test* dataset contains some missing values for this variable, however, we can't simply impute using some statistic such as the global mode. Instead, it is better to impute using the mode of all rows having the same neighborhood as the rows having the missing values.
-#
-# First, it is neccesary to get the index of missing values from the **MSZoning** variable:
-
-which(is.na(X_test['MSZoning']))
-
-# Since there are only 4 missing values, we can inspect every row to determine the **Neighborhood** of every row with missing data.
-
-X_test[c(456, 757, 791, 1445), ]
-
-# The first three rows belong to the IDOTRR neighborhood, the last belongs to Mitchell.
-# Let's identify the most common value for the feature **MSZoning** when **Neighborhood** takes the value IDOTRR.
-
-test_idotrr <- X_test[X_test$Neighborhood == "IDOTRR", c("MSZoning")]
-summary(test_idotrr)
-
-# Finally, let's impute the data:
-
-X_test[c(456, 757, 791), "MSZoning"] <- "RM"
-
-# Let's repeat the process for the Mitchel neighborhood: 
-
-test_mitchel <- X_test[X_test$Neighborhood == "Mitchel", c("MSZoning")]
-summary(test_mitchel)
-
-X_test[c(1445), "MSZoning"] <- "RL"
-summary(X_test$MSZoning)
-
-# ### Electrical
-#
-# There is one row in the training data set with a missing value:
-
-summary(X_train$Electrical)
-
-# Let's determine the index where the missing value occurs:
-
-which(is.na(X_train["Electrical"]))
-
-# Finally let's impute it with the mode according to neighborhood:
-
-X_train[1380, c("Neighborhood", "Electrical")]
-
-train_timber <- X_train[X_train$Neighborhood == "Timber", c("Electrical")]
-summary(train_timber)
-
-X_train[1380, "Electrical"] <- "SBrkr"
-summary(X_train$Electrical)
 
 # ## Linear Regression
 
@@ -186,7 +202,7 @@ model <- lm(SalePrice ~
             ExterQual +
             ExterCond +
             HeatingQC +
-            Electrical,
+            GarageQual,
             data=X_train)
 summary(model)
 
