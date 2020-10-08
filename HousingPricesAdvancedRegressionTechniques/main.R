@@ -95,7 +95,7 @@ for(col in colnames(X_test))
 # Add categorical variables to train and test data:
 
 # +
-categorical = c("MSZoning", "Neighborhood", "BldgType", "ExterQual", "ExterCond", "HeatingQC")
+categorical = c("MSZoning", "Neighborhood", "BldgType", "ExterQual", "ExterCond", "HeatingQC", "Electrical")
 
 for(col in categorical)
 {
@@ -152,7 +152,7 @@ which(is.na(X_train["Electrical"]))
 
 X_train[1380, c("Neighborhood", "Electrical")]
 
-train_timber <- X_train[X_train$Neighborhood == "Mitchel", c("Electrical")]
+train_timber <- X_train[X_train$Neighborhood == "Timber", c("Electrical")]
 summary(train_timber)
 
 X_train[1380, "Electrical"] <- "SBrkr"
@@ -185,7 +185,8 @@ model <- lm(SalePrice ~
             BldgType +
             ExterQual +
             ExterCond +
-            HeatingQC,
+            HeatingQC +
+            Electrical,
             data=X_train)
 summary(model)
 
