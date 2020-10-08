@@ -158,6 +158,22 @@ test$GarageQual[indices] <- "NoGarage"
 test$GarageQual = as.factor(test$GarageQual)
 summary(test$GarageQual)
 
+# ### FireplaceQu
+#
+# Same case as **GarageQual**.
+
+train$FireplaceQu <- as.character(train$FireplaceQu)
+indices <- which(is.na(train$FireplaceQu))
+train$FireplaceQu[indices] <- "NoKitchen"
+train$FireplaceQu = as.factor(train$FireplaceQu)
+summary(train$FireplaceQu)
+
+test$FireplaceQu <- as.character(test$FireplaceQu)
+indices <- which(is.na(test$FireplaceQu))
+test$FireplaceQu[indices] <- "NoKitchen"
+test$FireplaceQu = as.factor(test$FireplaceQu)
+summary(test$FireplaceQu)
+
 # ### Add categorical variables to train and test data:
 
 # +
