@@ -95,7 +95,7 @@ for(col in colnames(X_test))
 # Add categorical variables to train and test data:
 
 # +
-categorical = c("MSZoning", "Neighborhood", "BldgType", "ExterQual")
+categorical = c("MSZoning", "Neighborhood", "BldgType", "ExterQual", "ExterCond")
 
 for(col in categorical)
 {
@@ -163,7 +163,8 @@ model <- lm(SalePrice ~
             PoolArea +
             Neighborhood +   # <- Categorical varibles start here
             BldgType +
-            ExterQual,
+            ExterQual +
+            ExterCond,
             data=X_train)
 summary(model)
 
@@ -223,4 +224,4 @@ head(results)
 write.csv(results, "results_lr.csv", row.names=FALSE)
 print("Done")
 
-
+# ## 
