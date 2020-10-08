@@ -138,6 +138,26 @@ summary(test_mitchel)
 X_test[c(1445), "MSZoning"] <- "RL"
 summary(X_test$MSZoning)
 
+# ### Electrical
+#
+# There is one row in the training data set with a missing value:
+
+summary(X_train$Electrical)
+
+# Let's determine the index where the missing value occurs:
+
+which(is.na(X_train["Electrical"]))
+
+# Finally let's impute it with the mode according to neighborhood:
+
+X_train[1380, c("Neighborhood", "Electrical")]
+
+train_timber <- X_train[X_train$Neighborhood == "Mitchel", c("Electrical")]
+summary(train_timber)
+
+X_train[1380, "Electrical"] <- "SBrkr"
+summary(X_train$Electrical)
+
 # ## Linear Regression
 
 # ### Training
