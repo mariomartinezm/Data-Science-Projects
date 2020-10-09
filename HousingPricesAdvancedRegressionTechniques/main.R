@@ -20,10 +20,10 @@
 #
 # We start by loading the training and test data:
 
-train <- read.csv("/home/arpharazon/Documents/Python/DSandML/Datasets/house-prices-advanced-regression-techniques/train.csv", stringsAsFactors=TRUE)
+train <- read.csv("D:/Documents/Python/DSandML/Datasets/house-prices-advanced-regression-techniques/train.csv", stringsAsFactors=TRUE)
 head(train)
 
-test <- read.csv("/home/arpharazon/Documents/Python/DSandML/Datasets/house-prices-advanced-regression-techniques/test.csv", stringsAsFactors=TRUE)
+test <- read.csv("D:/Documents/Python/DSandML/Datasets/house-prices-advanced-regression-techniques/test.csv", stringsAsFactors=TRUE)
 head(test)
 
 # After inspecting the data it is easy to see that our target variable is "Saleprice". It is also convenient to get a summary of the data to get some important statistics and determine which features contain missing values:
@@ -174,6 +174,22 @@ test$FireplaceQu[indices] <- "NoKitchen"
 test$FireplaceQu = as.factor(test$FireplaceQu)
 summary(test$FireplaceQu)
 
+# ### Functional
+#
+# The *Test* dataset contains two rows with missing values:
+
+which(is.na(test$Functional))
+
+test[c(757, 1014), c("Neighborhood", "Functional")]
+
+ggplot(data=test[test$Neighborhood == "IDOTRR",]) +
+    geom_bar(mapping=aes(x=Functional, fill=Functional))
+
+# Most properties in the "IDOTRR" neighborhood are of "Typ" (typical) functionality, so let's impute our rows using such value.
+
+test[c(757, 1014), c("Functional")] <- "Typ"
+summary(test$Functional)
+
 # ### Add categorical variables to train and test data:
 
 # +
@@ -249,9 +265,9 @@ ggplot(data=X_train, aes(x=Predictions, y=SalePrice - Predictions)) +
 # Finally we can also use the *mean absolute error* to characterize the quality of the predictions:
 
 # +
-library(Metrics)
+# library(Metrics)
 
-mae(X_train$SalePrice, X_train$Predictions)
+# mae(X_train$SalePrice, X_train$Predictions)
 
 # +
 #library(caret)
