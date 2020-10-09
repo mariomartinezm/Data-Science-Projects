@@ -174,6 +174,22 @@ test$FireplaceQu[indices] <- "NoKitchen"
 test$FireplaceQu = as.factor(test$FireplaceQu)
 summary(test$FireplaceQu)
 
+# ### Fence
+#
+# Another categoric variable with a problematic level.
+
+train$Fence <- as.character(train$Fence)
+indices <- which(is.na(train$Fence))
+train$Fence[indices] <- "NoFence"
+train$Fence = as.factor(train$Fence)
+summary(train$Fence)
+
+test$Fence <- as.character(test$Fence)
+indices <- which(is.na(test$Fence))
+test$Fence[indices] <- "NoFence"
+test$Fence = as.factor(test$Fence)
+summary(test$Fence)
+
 # ### Functional
 #
 # The *Test* dataset contains two rows with missing values:
