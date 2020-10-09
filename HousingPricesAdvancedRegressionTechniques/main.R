@@ -265,9 +265,9 @@ ggplot(data=X_train, aes(x=Predictions, y=SalePrice - Predictions)) +
 # Finally we can also use the *mean absolute error* to characterize the quality of the predictions:
 
 # +
-# library(Metrics)
+library(modelr)
 
-# mae(X_train$SalePrice, X_train$Predictions)
+mae(model, train)
 
 # +
 #library(caret)
