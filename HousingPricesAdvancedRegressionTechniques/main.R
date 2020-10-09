@@ -190,6 +190,22 @@ test$Fence[indices] <- "NoFence"
 test$Fence = as.factor(test$Fence)
 summary(test$Fence)
 
+# ### BsmtQual
+#
+# Same as before.
+
+train$BsmtQual <- as.character(train$BsmtQual)
+indices <- which(is.na(train$BsmtQual))
+train$BsmtQual[indices] <- "NoBasement"
+train$BsmtQual = as.factor(train$BsmtQual)
+summary(train$BsmtQual)
+
+test$BsmtQual <- as.character(test$BsmtQual)
+indices <- which(is.na(test$BsmtQual))
+test$BsmtQual[indices] <- "NoBasement"
+test$BsmtQual = as.factor(test$BsmtQual)
+summary(test$BsmtQual)
+
 # ### Functional
 #
 # The *Test* dataset contains two rows with missing values:
@@ -224,7 +240,7 @@ summary(test$SaleType)
 # ### Add categorical variables to train and test data:
 
 # +
-categorical = c("MSZoning", "Neighborhood", "BldgType", "ExterQual", "ExterCond", "HeatingQC", "GarageQual")
+categorical = c("MSZoning", "Neighborhood", "BldgType", "ExterQual", "ExterCond", "HeatingQC", "GarageQual", "BsmtQual")
 
 for(col in categorical)
 {
@@ -265,7 +281,8 @@ model <- lm(SalePrice ~
             ExterQual +
             ExterCond +
             HeatingQC +
-            GarageQual,
+            GarageQual +
+            BsmtQual,
             data=X_train)
 summary(model)
 
