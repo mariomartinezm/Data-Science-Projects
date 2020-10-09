@@ -266,6 +266,7 @@ model <- lm(SalePrice ~
             BsmtFinSF1 +
             X1stFlrSF +
             X2ndFlrSF +
+            GrLivArea +
             BedroomAbvGr +
             KitchenAbvGr +
             TotRmsAbvGrd +
@@ -276,6 +277,7 @@ model <- lm(SalePrice ~
             OverallCond +
             FullBath +
             PoolArea +
+            MiscVal +
             Neighborhood +   # <- Categorical varibles start here
             BldgType +
             ExterQual +
@@ -301,7 +303,7 @@ head(X_test)
 # +
 library(ggplot2)
 
-ggplot(data=X_train, aes(y=SalePrice, x=Predictions)) + geom_point(size=1)
+ggplot(data=X_train, aes(y=SalePrice, x=Predictions, color=ExterQual)) + geom_point(size=1)
 # -
 
 # A similar approach is the *residual plot*, where the predictions errors are plotted as a function of the predictions. In this case, the line of perfect prediction is the line $y = 0$
