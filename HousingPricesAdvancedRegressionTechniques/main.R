@@ -206,6 +206,21 @@ ggplot(data=test[test$Neighborhood == "IDOTRR",]) +
 test[c(757, 1014), c("Functional")] <- "Typ"
 summary(test$Functional)
 
+# ### SaleType
+#
+# There is one missing value in the *test* dataset.
+
+which(is.na(test$SaleType))
+
+test[c(1030), c("YrSold", "YearBuilt", "SaleType")]
+summary(test$YrSold)
+
+ggplot(data=test) +
+    geom_bar(mapping=aes(x=SaleType, fill=SaleType))
+
+test[c(1030), c("SaleType")] <- "WD"
+summary(test$SaleType)
+
 # ### Add categorical variables to train and test data:
 
 # +
