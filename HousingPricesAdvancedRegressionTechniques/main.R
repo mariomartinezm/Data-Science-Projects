@@ -14,6 +14,7 @@
 
 library(ggplot2)
 library(modelr)
+library(ranger)
 
 # # Housing Prices Competition
 #
@@ -260,11 +261,11 @@ head(X_test)
 
 # ### Training
 
-model <- lm(SalePrice ~ 
-            LotFrontage + 
-            LotArea + 
-            YearBuilt + 
-            MasVnrArea + 
+model <- lm(SalePrice ~
+            LotFrontage +
+            LotArea +
+            YearBuilt +
+            MasVnrArea +
             GarageCars +
             BsmtFinSF1 +
             X1stFlrSF +
@@ -340,4 +341,72 @@ head(results)
 write.csv(results, "results_lr.csv", row.names=FALSE)
 print("Done")
 
-# ## 
+# ## Random Forest
+
+# ### Training
+
+rf <- ranger(SalePrice ~
+             LotFrontage +
+             LotArea +
+             YearBuilt +
+             MasVnrArea +
+             GarageCars +
+             BsmtFinSF1 +
+             X1stFlrSF +
+             X2ndFlrSF +
+             GrLivArea +
+             BedroomAbvGr +
+             KitchenAbvGr +
+             TotRmsAbvGrd +
+             WoodDeckSF +
+             BsmtUnfSF +
+             YearRemodAdd +
+             BsmtFullBath +
+             OverallCond +
+             FullBath +
+             PoolArea +
+             MiscVal +
+             Neighborhood +   # <- Categorical varibles start here
+             BldgType +
+             ExterQual +
+             ExterCond +
+             HeatingQC +
+             GarageQual +
+             BsmtQual,
+             data=X_train,
+             num.trees=1000,
+             max.depth=0)
+
+# ### Predictions
+
+pred <- predict(rf, data=X_train)
+X_train$Predictions <- pred$predictions
+head(X_train)
+
+pred <- predict(rf, data=X_test)
+X_test$SalePrice <- pred$predictions
+head(X_test)
+
+# ### Analyzing Prediction quality
+
+ggplot(data=X_train, aes(y=SalePrice, x=Predictions, color=ExterQual)) + geom_point(size=1)
+
+ggplot(data=X_train, aes(x=Predictions, y=SalePrice - Predictions)) +
+    geom_point(alpha=0.2, size=1) +
+    geom_smooth(aes(x=Predictions, y=SalePrice - Predictions), color="black")
+
+# ### Generate Results File
+
+# +
+results <- data.frame(
+    "id"=test$Id,
+    "SalePrice"=X_test$SalePrice
+)
+
+head(results)
+# -
+
+write.csv(results, "results_rf.csv", row.names=FALSE)
+print("Done")
+
+
