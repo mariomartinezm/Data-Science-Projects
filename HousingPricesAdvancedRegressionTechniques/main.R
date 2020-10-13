@@ -12,6 +12,9 @@
 #     name: ir
 # ---
 
+library(ggplot2)
+library(modelr)
+
 # # Housing Prices Competition
 #
 # ## Introduction
@@ -300,11 +303,7 @@ head(X_test)
 #
 # One way to determine the quality of our predictions is to plot our target variable as a function of our predictions. If the predictions are good the plot will be dots arranged near the line $y = x$, which is called the line of *perfect prediction*.
 
-# +
-library(ggplot2)
-
 ggplot(data=X_train, aes(y=SalePrice, x=Predictions, color=ExterQual)) + geom_point(size=1)
-# -
 
 # A similar approach is the *residual plot*, where the predictions errors are plotted as a function of the predictions. In this case, the line of perfect prediction is the line $y = 0$
 
@@ -313,9 +312,6 @@ ggplot(data=X_train, aes(x=Predictions, y=SalePrice - Predictions)) +
     geom_smooth(aes(x=Predictions, y=SalePrice - Predictions), color="black")
 
 # Finally we can also use the *mean absolute error* to characterize the quality of the predictions:
-
-# +
-library(modelr)
 
 mae(model, train)
 
