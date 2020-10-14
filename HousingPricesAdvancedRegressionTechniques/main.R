@@ -46,14 +46,14 @@ test <- transform(test, MSSubClass=as.factor(MSSubClass))
 # Select all numeric features:
 
 nums <- unlist(lapply(train, is.numeric))
-X_train <- train[, nums]
-X_train$Id <- NULL
-head(X_train)
+num_train = train[, nums]
+num_train$Id <- NULL
+head(num_train)
 
 nums <- unlist(lapply(test, is.numeric))
-X_test <- test[, nums]
-X_test$Id <- NULL
-head(X_test)
+num_test <- test[, nums]
+num_test$Id <- NULL
+head(num_test)
 
 # ### Missing Values
 
@@ -77,24 +77,41 @@ imputeNA <- function(data, strategy)
 # Impute train data:
 
 # +
-for(col in colnames(X_train))
+for(col in colnames(num_train))
 {
-    if(any(is.na(X_train[, col])))
+    if(any(is.na(num_train[, col])))
     {
-        X_train[, col] <- imputeNA(X_train[, col], "median")
+        num_train[, col] <- imputeNA(num_train[, col], "median")
     }
 }
 
-any(is.na(X_train$LotFrontage))
+any(is.na(num_train$LotFrontage))
 # -
 
-for(col in colnames(X_test))
+for(col in colnames(num_test))
 {
-    if(any(is.na(X_test[, col])))
+    if(any(is.na(num_test[, col])))
     {
-        X_test[, col] <- imputeNA(X_test[, col], "median")
+        num_test[, col] <- imputeNA(num_test[, col], "median")
     }
 }
+
+# ### Add numerical features to train and test data
+
+# +
+numerical = c("LotFrontage", "LotArea", "YearBuilt", "MasVnrArea",
+              "GarageCars", "BsmtFinSF1", "X1stFlrSF", "X2ndFlrSF",
+              "GrLivArea", "BedroomAbvGr", "KitchenAbvGr", "TotRmsAbvGrd",
+              "WoodDeckSF", "BsmtUnfSF", "YearRemodAdd", "BsmtFullBath",
+              "OverallCond", "FullBath", "PoolArea", "MiscVal")
+
+X_train <- num_train[, numerical]
+X_train$SalePrice <- num_train[, c("SalePrice")]
+head(X_train)
+# -
+
+X_test <- num_test[, numerical]
+head(X_test)
 
 # ### MSZoning
 
@@ -261,60 +278,35 @@ head(X_test)
 
 # ### Training
 
-model <- lm(SalePrice ~
-            LotFrontage +
-            LotArea +
-            YearBuilt +
-            MasVnrArea +
-            GarageCars +
-            BsmtFinSF1 +
-            X1stFlrSF +
-            X2ndFlrSF +
-            GrLivArea +
-            BedroomAbvGr +
-            KitchenAbvGr +
-            TotRmsAbvGrd +
-            WoodDeckSF +
-            BsmtUnfSF +
-            YearRemodAdd +
-            BsmtFullBath +
-            OverallCond +
-            FullBath +
-            PoolArea +
-            MiscVal +
-            Neighborhood +   # <- Categorical varibles start here
-            BldgType +
-            ExterQual +
-            ExterCond +
-            HeatingQC +
-            GarageQual +
-            BsmtQual,
-            data=X_train)
+model <- lm(SalePrice ~ ., data=X_train)
 summary(model)
 
 # ### Predictions
 
-X_train$Predictions <- predict(model, newdata=X_train)
-head(X_train)
+predictions <- predict(model, newdata=X_train)
+train_results = data.frame("SalePrice"=X_train$SalePrice, "Predictions"=predictions)
+head(train_results)
 
-X_test$SalePrice <- predict(model, newdata=X_test)
-head(X_test)
+predictions <- predict(model, newdata=X_test)
+test_results = data.frame("SalePrice"=predictions)
+head(test_results)
 
 # ### Analizing prediction quality
 #
 # One way to determine the quality of our predictions is to plot our target variable as a function of our predictions. If the predictions are good the plot will be dots arranged near the line $y = x$, which is called the line of *perfect prediction*.
 
-ggplot(data=X_train, aes(y=SalePrice, x=Predictions, color=ExterQual)) + geom_point(size=1)
+ggplot(data=train_results, aes(y=SalePrice, x=Predictions)) + geom_point(size=1)
 
 # A similar approach is the *residual plot*, where the predictions errors are plotted as a function of the predictions. In this case, the line of perfect prediction is the line $y = 0$
 
-ggplot(data=X_train, aes(x=Predictions, y=SalePrice - Predictions)) +
+ggplot(data=train_results, aes(x=Predictions, y=SalePrice - Predictions)) +
     geom_point(alpha=0.2, size=1) +
     geom_smooth(aes(x=Predictions, y=SalePrice - Predictions), color="black")
 
-# Finally we can also use the *mean absolute error* to characterize the quality of the predictions:
+# Finally we can also use the *mean absolute error* and *mean squared error* to characterize the quality of the predictions:
 
-mae(model, train)
+mae(model, X_train)
+mse(model, X_train)
 
 # +
 #library(caret)
@@ -332,7 +324,7 @@ mae(model, train)
 # +
 results <- data.frame(
     "id"=test$Id,
-    "SalePrice"=X_test$SalePrice
+    "SalePrice"=test_results$SalePrice
 )
 
 head(results)
@@ -345,37 +337,8 @@ print("Done")
 
 # ### Training
 
-rf <- ranger(SalePrice ~
-             LotFrontage +
-             LotArea +
-             YearBuilt +
-             MasVnrArea +
-             GarageCars +
-             BsmtFinSF1 +
-             X1stFlrSF +
-             X2ndFlrSF +
-             GrLivArea +
-             BedroomAbvGr +
-             KitchenAbvGr +
-             TotRmsAbvGrd +
-             WoodDeckSF +
-             BsmtUnfSF +
-             YearRemodAdd +
-             BsmtFullBath +
-             OverallCond +
-             FullBath +
-             PoolArea +
-             MiscVal +
-             Neighborhood +   # <- Categorical varibles start here
-             BldgType +
-             ExterQual +
-             ExterCond +
-             HeatingQC +
-             GarageQual +
-             BsmtQual,
-             data=X_train,
-             num.trees=1000,
-             max.depth=0)
+rf <- ranger(SalePrice ~ ., data=X_train, num.trees=1000, max.depth=0)
+rf$prediction.error
 
 # ### Predictions
 
