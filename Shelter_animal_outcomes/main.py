@@ -50,6 +50,12 @@ train[cols_missing] = imp_cols_train
 
 # Before imputing the *AgeUponOutcome* feature, it is necessary to transform this feature so it represents an age given in days.
 
+# ## Parse dates
+
+train['DateTime'] = pd.to_datetime(train['DateTime'])
+train['DateTime']
+
+
 # # Feature Engineering
 
 # ## Measure age in days
