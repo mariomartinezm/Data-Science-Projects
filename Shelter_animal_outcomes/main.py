@@ -55,6 +55,9 @@ train[cols_missing] = imp_cols_train
 train['DateTime'] = pd.to_datetime(train['DateTime'])
 train['DateTime']
 
+test['DateTime'] = pd.to_datetime(test['DateTime'])
+test['DateTime']
+
 
 # # Feature Engineering
 
@@ -111,6 +114,14 @@ imp_cols_test = pd.DataFrame(si.transform(test[['AgeuponOutcome']]))
 train['AgeuponOutcome'] = imp_cols_train
 test['AgeuponOutcome'] = imp_cols_test
 # -
+
+# ## Month of outcome
+
+train['MonthOutcome'] = [date.month for date in train['DateTime']]
+train['MonthOutcome']
+
+test['MonthOutcome'] = [date.month for date in test['DateTime']]
+test['MonthOutcome']
 
 # ## One Hot Encoding
 
@@ -224,6 +235,10 @@ train['OutcomeType'].isin(['Euthanasia', 'Died'])
 # So only a small proportion of animals died, with males having a slightly greater death rate.
 
 train['Breed'].value_counts()
+
+# ## Adoptions and deaths per month
+
+
 
 # # Random Forest
 
