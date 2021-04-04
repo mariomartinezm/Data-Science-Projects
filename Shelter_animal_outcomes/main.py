@@ -178,8 +178,12 @@ from sklearn.preprocessing import OneHotEncoder
 categorical = ['SexuponOutcome', 'AnimalType']
 
 ohe = OneHotEncoder(handle_unknown='ignore', sparse=False)
+
 ohe_cols_train = pd.DataFrame(ohe.fit_transform(train[categorical]))
+ohe_cols_train.columns = ohe.get_feature_names(['SexuponOutcome', 'AnimalType'])
+
 ohe_cols_test = pd.DataFrame(ohe.transform(test[categorical]))
+ohe_cols_test.columns = ohe.get_feature_names(['SexuponOutcome', 'AnimalType'])
 
 ohe_cols_train.index = train.index
 ohe_cols_test.index = test.index
@@ -198,7 +202,8 @@ test.head(10)
 # +
 y = train['OutcomeType']
 
-features = ['AgeuponOutcome', 0, 1, 2, 3, 4, 5, 6]
+features = ['AgeuponOutcome']
+features.extend(ohe.get_feature_names(['SexuponOutcome', 'AnimalType']))
 
 X_train = train[features]
 X_test = test[features]
