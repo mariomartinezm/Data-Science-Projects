@@ -5,7 +5,7 @@
 #       extension: .py
 #       format_name: light
 #       format_version: '1.5'
-#       jupytext_version: 1.5.0
+#       jupytext_version: 1.9.1
 #   kernelspec:
 #     display_name: Python 3
 #     language: python
@@ -13,10 +13,6 @@
 # ---
 
 # + _cell_guid="b1076dfc-b9ad-4769-8c92-a6c4dae69d19" _uuid="8f2839f25d086af736a60e9eeb907d3b93b6e0e5"
-# This Python 3 environment comes with many helpful analytics libraries installed
-# It is defined by the kaggle/python Docker image: https://github.com/kaggle/docker-python
-# For example, here's several helpful packages to load
-
 import numpy as np
 import pandas as pd
 
@@ -103,7 +99,7 @@ test['AgeuponOutcome'] = imp_cols_test
 
 # # Exploratory data analysis
 
-# The data contains several categorical variables (*SexUponOutcome*, *Breed*, *Color*, etc), the corresponding distribution can be obtained as follows:
+# The data contains several categorical variables (*SexUponOutcome*, *Breed*, *Color*, etc), the corresponding frequencies can be obtained as follows:
 
 # +
 import matplotlib.pyplot as plt
