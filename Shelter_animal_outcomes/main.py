@@ -28,6 +28,30 @@ test.head(10)
 
 # Before attempting any kind of analysis it is important to clean the data, e.g., to impute missing values or to perform transformations on the data so they may be used for statistical analysis or traning of a machine learning algorithm.
 
+# ## Missing Values
+
+# Get columns with missing values:
+
+print([col for col in train.columns if train[col].isna().any()])
+print([col for col in test.columns if test[col].isna().any()])
+
+# +
+from sklearn.impute import SimpleImputer
+
+cols_missing = ['SexuponOutcome']
+
+si = SimpleImputer(strategy='most_frequent')
+
+imp_cols_train = pd.DataFrame(si.fit_transform(train[cols_missing]))
+imp_cols_train.columns = cols_missing
+
+train[cols_missing] = imp_cols_train
+# -
+
+# Before imputing the *AgeUponOutcome* feature, it is necessary to transform this feature so it represents an age given in days.
+
+# # Feature Engineering
+
 # ## Measure age in days
 
 # The column *AgeuponOutcome* contains the age of an animal at the time the corresponding outcome occurred. However the values for this column contains strings such as "2 years", "2 months", "3 weeks", etc. In order to use these values for training we need to convert them to a common numeric scale. To fix this, we can convert all values to days as follows:
@@ -69,25 +93,10 @@ test['AgeuponOutcome'] = test['AgeuponOutcome'].astype('Int64')
 test['AgeuponOutcome']
 # -
 
-# ## Missing Values
 
-# Get columns with missing values:
-
-print([col for col in train.columns if train[col].isna().any()])
-print([col for col in test.columns if test[col].isna().any()])
+# Now we can impute the missing values in the *AgeuponOutcome* column:
 
 # +
-from sklearn.impute import SimpleImputer
-
-cols_missing = ['SexuponOutcome']
-
-si = SimpleImputer(strategy='most_frequent')
-
-imp_cols_train = pd.DataFrame(si.fit_transform(train[cols_missing]))
-imp_cols_train.columns = cols_missing
-
-train[cols_missing] = imp_cols_train
-
 si = SimpleImputer(strategy='mean')
 
 imp_cols_train = pd.DataFrame(si.fit_transform(train[['AgeuponOutcome']]))
@@ -96,6 +105,49 @@ imp_cols_test = pd.DataFrame(si.transform(test[['AgeuponOutcome']]))
 train['AgeuponOutcome'] = imp_cols_train
 test['AgeuponOutcome'] = imp_cols_test
 # -
+
+# ## One Hot Encoding
+
+# +
+from sklearn.preprocessing import LabelEncoder
+from sklearn.preprocessing import OneHotEncoder
+
+categorical = ['SexuponOutcome', 'AnimalType']
+
+ohe = OneHotEncoder(handle_unknown='ignore', sparse=False)
+
+ohe_cols_train = pd.DataFrame(ohe.fit_transform(train[categorical]))
+ohe_cols_train.columns = ohe.get_feature_names(['SexuponOutcome', 'AnimalType'])
+
+ohe_cols_test = pd.DataFrame(ohe.transform(test[categorical]))
+ohe_cols_test.columns = ohe.get_feature_names(['SexuponOutcome', 'AnimalType'])
+
+ohe_cols_train.index = train.index
+ohe_cols_test.index = test.index
+
+for col in ohe_cols_train.columns:
+    train[col] = ohe_cols_train[col]
+    test[col] = ohe_cols_test[col]
+# -
+
+train.head(10)
+
+test.head(10)
+
+# # Feature Selection
+
+# +
+y = train['OutcomeType']
+
+features = ['AgeuponOutcome']
+features.extend(ohe.get_feature_names(['SexuponOutcome', 'AnimalType']))
+
+X_train = train[features]
+X_test = test[features]
+
+X_train.head(10)
+# -
+
 
 # # Exploratory data analysis
 
@@ -166,50 +218,6 @@ train['OutcomeType'].isin(['Euthanasia', 'Died'])
 # So only a small proportion of animals died, with males having a slightly greater death rate.
 
 train['Breed'].value_counts()
-
-# # Feature Engineering
-
-# ## One Hot Encoding
-
-# +
-from sklearn.preprocessing import LabelEncoder
-from sklearn.preprocessing import OneHotEncoder
-
-categorical = ['SexuponOutcome', 'AnimalType']
-
-ohe = OneHotEncoder(handle_unknown='ignore', sparse=False)
-
-ohe_cols_train = pd.DataFrame(ohe.fit_transform(train[categorical]))
-ohe_cols_train.columns = ohe.get_feature_names(['SexuponOutcome', 'AnimalType'])
-
-ohe_cols_test = pd.DataFrame(ohe.transform(test[categorical]))
-ohe_cols_test.columns = ohe.get_feature_names(['SexuponOutcome', 'AnimalType'])
-
-ohe_cols_train.index = train.index
-ohe_cols_test.index = test.index
-
-for col in ohe_cols_train.columns:
-    train[col] = ohe_cols_train[col]
-    test[col] = ohe_cols_test[col]
-# -
-
-train.head(10)
-
-test.head(10)
-
-# # Feature Selection
-
-# +
-y = train['OutcomeType']
-
-features = ['AgeuponOutcome']
-features.extend(ohe.get_feature_names(['SexuponOutcome', 'AnimalType']))
-
-X_train = train[features]
-X_test = test[features]
-
-X_train.head(10)
-# -
 
 # # Random Forest
 
