@@ -151,21 +151,6 @@ train.head(10)
 
 test.head(10)
 
-# # Feature Selection
-
-# +
-y = train['OutcomeType']
-
-features = ['AgeuponOutcome']
-features.extend(ohe.get_feature_names(['SexuponOutcome', 'AnimalType']))
-
-X_train = train[features]
-X_test = test[features]
-
-X_train.head(10)
-# -
-
-
 # # Exploratory data analysis
 
 # The data contains several categorical variables (*SexUponOutcome*, *Breed*, *Color*, etc), the corresponding frequencies can be obtained as follows:
@@ -238,6 +223,21 @@ train['Breed'].value_counts()
 
 # ## Adoptions and deaths per month
 
+
+
+# # Feature Selection
+
+# +
+y = train['OutcomeType']
+
+features = ['AgeuponOutcome']
+features.extend(ohe.get_feature_names(['SexuponOutcome', 'AnimalType']))
+
+X_train = train[features]
+X_test = test[features]
+
+X_train.head(10)
+# -
 
 
 # # Random Forest
