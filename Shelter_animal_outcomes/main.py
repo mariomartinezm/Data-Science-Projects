@@ -221,9 +221,24 @@ train['OutcomeType'].isin(['Euthanasia', 'Died'])
 
 train['Breed'].value_counts()
 
-# ## Adoptions and deaths per month
+# ## Outcomes per month
+#
+# To observe the number of samples per month, for the train dataset, we proceed as follows:
 
+train['MonthOutcome'].value_counts().plot(kind='bar').set_title('Month Outcome - Train')
 
+# The plot shows that there are more outcomes in winter months than every other season. However we should investigate how many adoptions and deaths occur in a monthly basis.
+
+# +
+fig, ax = plt.subplots(1, len(np.unique(train['OutcomeType'])))
+
+fig.set_figheight(5)
+fig.set_figwidth(15)
+
+for i, val in enumerate(np.unique(train['OutcomeType'])):
+    df = train[train['OutcomeType'] == val]
+    df['MonthOutcome'].value_counts().plot(kind='bar', ax=ax[i]).set_title(val)
+# -
 
 # # Feature Selection
 
