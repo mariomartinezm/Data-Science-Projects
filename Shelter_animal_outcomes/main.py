@@ -131,6 +131,16 @@ train['YearOutcome']
 test['YearOutcome'] = [date.year for date in test['DateTime']]
 test['YearOutcome']
 
+# ## Sterilized animals
+#
+# A person might preffer a mascot that is already sterilized, so it might worth to classifiy all animals according to whether they are sterilized or not.
+
+train['Sterilized'] = train['SexuponOutcome'].str.contains('Neutered') | train['SexuponOutcome'].str.contains('Spayed')
+train['Sterilized']
+
+test['Sterilized'] = test['SexuponOutcome'].str.contains('Neutered') | test['SexuponOutcome'].str.contains('Spayed')
+test['Sterilized']
+
 # ## One Hot Encoding
 
 # +
@@ -272,7 +282,7 @@ for i, val in enumerate(np.unique(train['OutcomeType'])):
 # +
 y = train['OutcomeType']
 
-features = ['AgeuponOutcome']
+features = ['AgeuponOutcome', 'Sterilized']
 features.extend(ohe.get_feature_names(['SexuponOutcome', 'AnimalType']))
 
 X_train = train[features]
@@ -293,5 +303,4 @@ rf.fit(X_train, y)
 
 cross_val_score(rf, X_train, y, cv=5).mean()
 # -
-
 
