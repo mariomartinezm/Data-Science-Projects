@@ -248,6 +248,25 @@ for i, val in enumerate(np.unique(train['OutcomeType'])):
     df['MonthOutcome'].value_counts().plot(kind='bar', ax=ax[i]).set_title(val)
 # -
 
+# ## Outcomes per year
+#
+# The number of outcomes per month doesn't seem to be very helpul, let's try with the number of outcome pear year.
+
+train['YearOutcome'].value_counts().plot(kind='bar').set_title('Year Outcome - Train')
+
+# This plot shows that the total number of outcomes occurs in the years 2014 and 2015. Let's calculate the how many of each kind of oucome occurs each year.
+
+# +
+fig, ax = plt.subplots(1, len(np.unique(train['OutcomeType'])))
+
+fig.set_figheight(5)
+fig.set_figwidth(20)
+
+for i, val in enumerate(np.unique(train['OutcomeType'])):
+    df = train[train['OutcomeType'] == val]
+    df['YearOutcome'].value_counts().plot(kind='bar', ax=ax[i]).set_title(val)
+# -
+
 # # Feature Selection
 
 # +
