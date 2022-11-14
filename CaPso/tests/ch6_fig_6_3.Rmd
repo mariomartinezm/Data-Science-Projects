@@ -1,0 +1,105 @@
+---
+title: Chapter 6, Figure 3
+output:
+    html_document:
+        theme: united
+        highlight: zenburn
+        df_print: paged
+---
+
+## Packages
+```{r}
+library(rcapso)
+```
+
+## Requirements
+
+1. The QtCapso program.
+2. The rcapso package.
+
+## Procedure
+
+1. Simulate a local CaPso model on a lattice of $512 \times
+   512$ cells, during 40 seasons, using the following
+   parameters.
+```json
+{
+    "competitionFactor": 0,
+    "finalInertiaWeight": 0,
+    "fitnessRadius": 1,
+    "initialInertiaWeight": 0,
+    "initialNumberOfPredators": 2621,
+    "initialNumberOfPreys": 1,
+    "predatorCognitiveFactor": 0,
+    "predatorMaximumSpeed": 1,
+    "predatorReproductionRadius": 1,
+    "predatorReproductiveCapacity": 1,
+    "predatorSocialFactor": 0,
+    "predatorSocialRadius": 1,
+    "preyReproductionRadius": 1,
+    "preyReproductiveCapacity": 0,
+    "type": "LOCAL"
+}
+```
+
+2. Load the results of the simulation in a dataframe.
+```{r}
+sim <- read.csv("~/Documents/Datasets/capso/code_test/pcg_fig_6_3_a_ez_1_0_0.csv")
+sim <- sim1[, c("Preys", "Predators")]
+head(sim1)
+```
+
+3. Plot the time series of preys and predators.
+```{r}
+rcapso_plot_prey_pred_data(sim)
+```
+
+4. Repeat the simulation using a `predatorReproductiveCapacity` equal to 5.
+   Load the results in a dataframe.
+```{r}
+sim <- read.csv("~/Documents/Datasets/capso/code_test/pcg_fig_6_3_a_ez_5_0_0.csv")
+sim <- sim[, c("Preys", "Predators")]
+head(sim)
+```
+
+5. Plot the time series of preys and predators.
+```{r}
+rcapso_plot_prey_pred_data(sim, normalize = TRUE)
+```
+
+6. Compute a CaPso mean field model, where the only active transition functions
+   are the reproduction of predators, the death of predators and the death of
+   preys, during 40 seasons using the following parameters:
+    * `num_iter = 1`
+    * `use_reg = TRUE`
+    * `psi0 = 1`
+    * `phi0 = 0.01`
+    * `ey = 1`
+    * `ry = 1`
+    * `ez = 1`
+    * `rz = 1`
+
+```{r}
+rules <- c("rep_preds", "death_preds", "death_preys")
+df1   <- rcapso_compute_mf(rules, num_iter = 40, use_reg = TRUE, psi0 = 1, phi0 = 0.01, ez = 1, rz = 1)
+head(df1)
+```
+
+7. Repeat the previous step but use `ez = 5`.
+```{r}
+df5   <- rcapso_compute_mf(rules, num_iter = 40, use_reg = TRUE, psi0 = 1, phi0 = 0.01, ez = 5, rz = 1)
+head(df5)
+```
+
+8. Plot both results
+```{r}
+rcapso_plot_prey_pred_data(df1)
+```
+
+```{r}
+rcapso_plot_prey_pred_data(df5)
+```
+
+## Results
+
+* Verify that the plots match the data in Figure 6.3.
