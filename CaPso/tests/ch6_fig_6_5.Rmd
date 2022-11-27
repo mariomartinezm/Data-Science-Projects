@@ -1,0 +1,137 @@
+---
+title: Chapter 6, Figure 5
+output:
+    html_document:
+        theme: united
+        highlight: zenburn
+        df_print: paged
+---
+
+## Packages
+```{r}
+library(ggplot2)
+library(rcapso)
+```
+
+## Requirements
+
+1. The QtCapso program.
+2. The rcapso package.
+
+## Procedure
+
+1. Simulate a local CaPso model on a lattice of $512 \times 512$ cells, during
+   40 seasons.
+```json
+{
+    "competitionFactor": 0,
+    "finalInertiaWeight": 0,
+    "fitnessRadius": 1,
+    "initialInertiaWeight": 0,
+    "initialNumberOfPredators": 2621,
+    "initialNumberOfPreys": 1,
+    "predatorCognitiveFactor": 0,
+    "predatorMaximumSpeed": 1,
+    "predatorReproductionRadius": 10,
+    "predatorReproductiveCapacity": 1,
+    "predatorSocialFactor": 0,
+    "predatorSocialRadius": 1,
+    "preyReproductionRadius": 1,
+    "preyReproductiveCapacity": 0,
+    "type": "LOCAL"
+}
+```
+
+2. Load the results of the simulation in a dataframe.
+```{r}
+ts1 <- read.csv("~/Documents/Datasets/capso/code_test/pcg_fig_6_5_a_ez_1_0_0.csv")
+ts1 <- sim[, c("Preys", "Predators")]
+head(ts1)
+```
+
+3. Repeat the simulation for `predatorReproductiveCapacity = 3` and
+   `predatorReproductiveCapacity = 5`. Load the results in a dataframe.
+```{r}
+ts3 <- read.csv("~/Documents/Datasets/capso/code_test/pcg_fig_6_5_b_ez_3_0_0.csv")
+ts3 <- sim3[, c("Preys", "Predators")]
+head(ts3)
+```
+
+```{r}
+ts5 <- read.csv("~/Documents/Datasets/capso/code_test/pcg_fig_6_5_c_ez_5_0_0.csv")
+ts5 <- sim5[, c("Preys", "Predators")]
+head(ts5)
+```
+
+4. Compute a CaPso mean field model, where the only active transition functions
+   are the reproduction of predators, the death of predators and the death of
+   preys, during 40 seasons using the following parameters:
+    * `num_iter = 1`
+    * `use_reg = FALSE`
+    * `psi0 = 1`
+    * `phi0 = 0.01`
+    * `ey = 1`
+    * `ry = 1`
+    * `ez = 1`
+    * `rz = 1`
+
+```{r}
+rules <- c("rep_preds", "death_preds_adj", "death_preys")
+mf1   <- rcapso_compute_mf(rules, num_iter = 40, use_reg = FALSE, psi0 = 1, phi0 = 0.01, ez = 1, rz = 1)
+head(mf1)
+```
+
+5. Repeat the previous step for `ez = 3` and `ez = 5`.
+```{r}
+mf3   <- rcapso_compute_mf(rules, num_iter = 40, use_reg = FALSE, psi0 = 1, phi0 = 0.01, ez = 3, rz = 1)
+head(mf3)
+```
+
+```{r}
+mf5   <- rcapso_compute_mf(rules, num_iter = 40, use_reg = FALSE, psi0 = 1, phi0 = 0.01, ez = 5, rz = 1)
+head(mf5)
+```
+
+6. Plot the data of each simulation with the corresponding mean field results.
+
+```{r}
+colors <- c("Preys"        = "green",
+            "Predators"    = "red",
+            "MF Preys"     = "dark green",
+            "MF Predators" = "dark red")
+
+lattice_size <- 512 * 512
+index_set    <- 1:nrow(sim)
+
+ggplot() +
+    geom_line(data = ts1, mapping = aes(x = index_set, y = Preys / lattice_size, color = "Preys")) +
+    geom_line(data = ts1, mapping = aes(x = index_set, y = Predators / lattice_size, color = "Predators")) +
+    geom_line(data = mf1, mapping = aes(x = index_set, y = Preys, color = "MF Preys")) +
+    geom_line(data = mf1, mapping = aes(x = index_set, y = Predators, color = "MF Predators")) +
+    labs(x = "Time (seasons)", y = "Population density", color = NULL) +
+    scale_color_manual(values = colors)
+```
+
+```{r}
+ggplot() +
+    geom_line(data = ts3, mapping = aes(x = index_set, y = Preys / lattice_size, color = "Preys")) +
+    geom_line(data = ts3, mapping = aes(x = index_set, y = Predators / lattice_size, color = "Predators")) +
+    geom_line(data = mf3, mapping = aes(x = index_set, y = Preys, color = "MF Preys")) +
+    geom_line(data = mf3, mapping = aes(x = index_set, y = Predators, color = "MF Predators")) +
+    labs(x = "Time (seasons)", y = "Population density", color = NULL) +
+    scale_color_manual(values = colors)
+```
+
+```{r}
+ggplot() +
+    geom_line(data = ts5, mapping = aes(x = index_set, y = Preys / lattice_size, color = "Preys")) +
+    geom_line(data = ts5, mapping = aes(x = index_set, y = Predators / lattice_size, color = "Predators")) +
+    geom_line(data = mf5, mapping = aes(x = index_set, y = Preys, color = "MF Preys")) +
+    geom_line(data = mf5, mapping = aes(x = index_set, y = Predators, color = "MF Predators")) +
+    labs(x = "Time (seasons)", y = "Population density", color = NULL) +
+    scale_color_manual(values = colors)
+```
+
+## Results
+
+* Verify that the plots match the data in Figure 6.5.
