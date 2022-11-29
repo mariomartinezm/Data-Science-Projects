@@ -61,7 +61,7 @@ head(mf)
 
 ```{r}
 ts <- read.csv("../../../../Datasets/capso/code_test/pcg_fig_6_7_0_0.csv")
-head(sm)
+head(ts)
 ```
 
 2. Plot both results.

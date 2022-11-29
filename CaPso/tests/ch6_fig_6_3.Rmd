@@ -45,13 +45,13 @@ library(rcapso)
 2. Load the results of the simulation in a dataframe.
 ```{r}
 sim <- read.csv("~/Documents/Datasets/capso/code_test/pcg_fig_6_3_a_ez_1_0_0.csv")
-sim <- sim1[, c("Preys", "Predators")]
-head(sim1)
+sim <- sim[, c("Preys", "Predators")]
+head(sim)
 ```
 
 3. Plot the time series of preys and predators.
 ```{r}
-rcapso_plot_prey_pred_data(sim)
+rcapso_plot_prey_pred_data(sim, normalize = TRUE)
 ```
 
 4. Repeat the simulation using a `predatorReproductiveCapacity` equal to 5.

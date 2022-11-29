@@ -49,9 +49,10 @@ library(rcapso)
    predators.
 
 ```{r, read_fig_6_9_a_data}
-path        <- "../../../../Datasets/capso/code_test/pcg_fig_6_9_a_"
-batch_index <- "0"
-sim_index   <- "0"
+lattice_size <- 512 * 512
+path         <- "../../../../Datasets/capso/code_test/pcg_fig_6_9_a_"
+batch_index  <- "0"
+sim_index    <- "0"
 
 df_ez_2 <- read.csv(paste(path, batch_index, "_", sim_index, ".csv", sep = ""))
 df_ez_2 <- df_ez_2[, c("Preys", "Predators")] / lattice_size

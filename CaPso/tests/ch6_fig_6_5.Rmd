@@ -45,7 +45,7 @@ library(rcapso)
 2. Load the results of the simulation in a dataframe.
 ```{r}
 ts1 <- read.csv("~/Documents/Datasets/capso/code_test/pcg_fig_6_5_a_ez_1_0_0.csv")
-ts1 <- sim[, c("Preys", "Predators")]
+ts1 <- ts1[, c("Preys", "Predators")]
 head(ts1)
 ```
 
@@ -53,13 +53,13 @@ head(ts1)
    `predatorReproductiveCapacity = 5`. Load the results in a dataframe.
 ```{r}
 ts3 <- read.csv("~/Documents/Datasets/capso/code_test/pcg_fig_6_5_b_ez_3_0_0.csv")
-ts3 <- sim3[, c("Preys", "Predators")]
+ts3 <- ts3[, c("Preys", "Predators")]
 head(ts3)
 ```
 
 ```{r}
 ts5 <- read.csv("~/Documents/Datasets/capso/code_test/pcg_fig_6_5_c_ez_5_0_0.csv")
-ts5 <- sim5[, c("Preys", "Predators")]
+ts5 <- ts5[, c("Preys", "Predators")]
 head(ts5)
 ```
 
@@ -101,7 +101,7 @@ colors <- c("Preys"        = "green",
             "MF Predators" = "dark red")
 
 lattice_size <- 512 * 512
-index_set    <- 1:nrow(sim)
+index_set    <- 1:nrow(ts1)
 
 ggplot() +
     geom_line(data = ts1, mapping = aes(x = index_set, y = Preys / lattice_size, color = "Preys")) +

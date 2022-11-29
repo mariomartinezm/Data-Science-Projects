@@ -46,6 +46,8 @@ library(rcapso)
    `3`, load these data in a data frame.
 
 ```{r}
+lattice_size  <- 512 * 512
+
 path          <- "../../../../Datasets/capso/code_test/pcg_fig_6_11_a_epsilon"
 index         <- "23"
 
