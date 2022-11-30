@@ -1,0 +1,87 @@
+---
+title: Chapter 6, Figure 8
+author: Mario Martínez Molina
+output:
+    html_document:
+        theme: unite
+        highlight: zenburn
+        df_print: paged
+---
+
+## Packages
+```{r}
+library(rcapso)
+library(ggplot2)
+```
+
+## Requirements
+1. The QtCaPso program.
+2. The rcapso package
+
+## Procedure
+1. Compute a CaPso mean field model using the default rules and the following
+   parameters:
+    * `num_iter = 160`
+    * `use_reg = FALSE`
+    * `psi0 = 1`
+    * `phi0 = 0.001`
+    * `alpha = 0.1`
+    * `ey = 1`
+    * `ry = 1`
+    * `ez = 1`
+    * `rz = 1`
+
+```{r}
+mf    <- rcapso_compute_mf(num_iter = 160, use_reg = FALSE, psi0 = 1,
+                           phi0 = 0.001, alpha = 0.1, ey = 1, ry = 1,
+                           ez = 1, rz = 1)
+head(mf)
+```
+
+2. Simulate a CaPso model during 160 seasons using the following parameters:
+```json
+{
+    "competitionFactor": 0.10000000149011612,
+    "finalInertiaWeight": 0,
+    "fitnessRadius": 20,
+    "initialInertiaWeight": 0,
+    "initialNumberOfPredators": 262,
+    "initialNumberOfPreys": 1,
+    "predatorCognitiveFactor": 0,
+    "predatorMaximumSpeed": 0,
+    "predatorReproductionRadius": 20,
+    "predatorReproductiveCapacity": 1,
+    "predatorSocialFactor": 0,
+    "predatorSocialRadius": 1,
+    "preyReproductionRadius": 20,
+    "preyReproductiveCapacity": 1,
+    "type": "LOCAL"
+}
+```
+
+```{r}
+ts <- read.csv("../../../../Datasets/capso/code_test/pcg_fig_6_8_0_0.csv")
+head(ts)
+```
+
+2. Plot both results.
+```{r}
+colors <- c("Preys"        = "darkolivegreen4",
+            "Predators"    = "brown3",
+            "MF Preys"     = "cornflowerblue",
+            "MF Predators" = "purple")
+lattice_size <- 512 * 512
+index_set    <- seq_len(nrow(ts))
+
+ggplot() +
+    geom_line(data = mf, mapping = aes(x = index_set, y = Preys, color = "MF Preys"), lwd = 1) +
+    geom_line(data = mf, mapping = aes(x = index_set, y = Predators, color = "MF Predators"), lwd = 1) +
+    geom_line(data = ts, mapping = aes(x = index_set, y = Preys / lattice_size, color = "Preys"), lwd = 1) +
+    geom_line(data = ts, mapping = aes(x = index_set, y = Predators / lattice_size, color = "Predators"), lwd = 1) +
+    labs(x = "Time (seasons)", y = "Population density", color = NULL) +
+    scale_color_manual(values = colors) +
+    scale_y_continuous(breaks = seq(0, 1, by = 0.2))
+```
+
+## Results
+* Verify that the plots match the data in Figure 6.8.
