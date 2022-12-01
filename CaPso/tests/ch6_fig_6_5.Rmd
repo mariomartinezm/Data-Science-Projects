@@ -44,7 +44,7 @@ library(rcapso)
 
 2. Load the results of the simulation in a dataframe.
 ```{r}
-ts1 <- read.csv("~/Documents/Datasets/capso/code_test/pcg_fig_6_5_a_ez_1_0_0.csv")
+ts1 <- read.csv("../../../../Datasets/capso/code_test/pcg_fig_6_5_a_ez_1_0_0.csv")
 ts1 <- ts1[, c("Preys", "Predators")]
 head(ts1)
 ```
@@ -52,13 +52,13 @@ head(ts1)
 3. Repeat the simulation for `predatorReproductiveCapacity = 3` and
    `predatorReproductiveCapacity = 5`. Load the results in a dataframe.
 ```{r}
-ts3 <- read.csv("~/Documents/Datasets/capso/code_test/pcg_fig_6_5_b_ez_3_0_0.csv")
+ts3 <- read.csv("../../../../Datasets/capso/code_test/pcg_fig_6_5_b_ez_3_0_0.csv")
 ts3 <- ts3[, c("Preys", "Predators")]
 head(ts3)
 ```
 
 ```{r}
-ts5 <- read.csv("~/Documents/Datasets/capso/code_test/pcg_fig_6_5_c_ez_5_0_0.csv")
+ts5 <- read.csv("../../../../Datasets/capso/code_test/pcg_fig_6_5_c_ez_5_0_0.csv")
 ts5 <- ts5[, c("Preys", "Predators")]
 head(ts5)
 ```
