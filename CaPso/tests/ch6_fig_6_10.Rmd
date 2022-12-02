@@ -123,33 +123,45 @@ head(mf_ez_5)
 
 5. Now plot the phase plot of each dataset.
 
-```{r, plot_fig_6_9_, fig.width = 5, fig.height = 4, dev = "svg"}
+```{r, plot_fig_6_9_, fig.width = 4, fig.height = 4, dev = "svg"}
 colors <- c("Mean field" = "cornflowerblue",
             "Simulation" = "black")
 
 ggplot() +
-    geom_path(data = df_ez_2, mapping = aes(x = Preys, y = Predators, color = "Mean field")) +
-    geom_path(data = mf_ez_2, mapping = aes(x = Preys, y = Predators, color = "Simulation")) +
+    geom_path(data = df_ez_2,
+              mapping = aes(x = Preys, y = Predators, color = "Mean field")) +
+    geom_path(data = mf_ez_2,
+              mapping = aes(x = Preys, y = Predators, color = "Simulation")) +
     labs(x = "Preys", y = "Predators", color = NULL) +
-    scale_color_manual(values = colors)
+    scale_color_manual(values = colors) +
+    theme(legend.position = c(0.2, 0.2))
 
 ggplot() +
-    geom_path(data = df_ez_3, mapping = aes(x = Preys, y = Predators, color = "Mean field")) +
-    geom_path(data = mf_ez_3, mapping = aes(x = Preys, y = Predators, color = "Simulation")) +
+    geom_path(data = df_ez_3,
+              mapping = aes(x = Preys, y = Predators, color = "Mean field")) +
+    geom_path(data = mf_ez_3,
+              mapping = aes(x = Preys, y = Predators, color = "Simulation")) +
     labs(x = "Preys", y = "Predators", color = NULL) +
-    scale_color_manual(values = colors)
+    scale_color_manual(values = colors) +
+    theme(legend.position = c(0.2, 0.2))
 
 ggplot() +
-    geom_path(data = df_ez_4, mapping = aes(x = Preys, y = Predators, color = "Mean field")) +
-    geom_path(data = mf_ez_4, mapping = aes(x = Preys, y = Predators, color = "Simulation")) +
+    geom_path(data = df_ez_4,
+              mapping = aes(x = Preys, y = Predators, color = "Mean field")) +
+    geom_path(data = mf_ez_4,
+              mapping = aes(x = Preys, y = Predators, color = "Simulation")) +
     labs(x = "Preys", y = "Predators", color = NULL) +
-    scale_color_manual(values = colors)
+    scale_color_manual(values = colors) +
+    theme(legend.position = c(0.2, 0.2))
 
 ggplot() +
-    geom_path(data = df_ez_5, mapping = aes(x = Preys, y = Predators, color = "Mean field")) +
-    geom_path(data = mf_ez_5, mapping = aes(x = Preys, y = Predators, color = "Simulation")) +
+    geom_path(data = df_ez_5,
+              mapping = aes(x = Preys, y = Predators, color = "Mean field")) +
+    geom_path(data = mf_ez_5,
+              mapping = aes(x = Preys, y = Predators, color = "Simulation")) +
     labs(x = "Preys", y = "Predators", color = NULL) +
-    scale_color_manual(values = colors)
+    scale_color_manual(values = colors) +
+    theme(legend.position = c(0.2, 0.2))
 ```
 
 ## Results
