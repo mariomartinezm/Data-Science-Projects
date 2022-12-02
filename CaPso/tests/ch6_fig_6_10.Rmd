@@ -1,0 +1,158 @@
+---
+title:  Chapter 6, Figure 10
+author: Mario Martínez Molina
+output:
+    html_document:
+        theme: united
+        highlight: zenburn
+        df_print: paged
+---
+
+## Packages
+```{r}
+library(ggplot2)
+library(rcapso)
+```
+
+## Requirements
+
+1. The QtCaPso program.
+2. The rcapso library.
+
+## Procedure
+
+1. Simulate a local CaPso on a lattice of $512 \times 512$ cells during 10000
+   seasons using the following parameters.
+```json
+{
+    "competitionFactor": 0.1,
+    "finalInertiaWeight": 0,
+    "fitnessRadius": 10,
+    "initialInertiaWeight": 0,
+    "initialNumberOfPredators": 262,
+    "initialNumberOfPreys": 1,
+    "predatorCognitiveFactor": 0,
+    "predatorMaximumSpeed": 0,
+    "predatorReproductionRadius": 20,
+    "predatorReproductiveCapacity": 1,
+    "predatorSocialFactor": 0,
+    "predatorSocialRadius": 1,
+    "preyReproductionRadius": 20,
+    "preyReproductiveCapacity": 2,
+    "type": "LOCAL"
+}
+```
+
+2. Repeat the previous step for a reproductive capacity of preys equal to 3, 4,
+   and 5.
+
+3. Load the data in a data frame and normalize the densities of preys and
+   predators.
+
+```{r, read_fig_6_9_a_data}
+lattice_size <- 512 * 512
+path         <- "../../../../Datasets/capso/code_test/pcg_fig_6_10_a_"
+batch_index  <- "0"
+sim_index    <- "0"
+
+df_ez_2 <- read.csv(paste(path, batch_index, "_", sim_index, ".csv", sep = ""))
+df_ez_2 <- df_ez_2[, c("Preys", "Predators")] / lattice_size
+head(df_ez_2)
+```
+
+```{r}
+path        <- "../../../../Datasets/capso/code_test/pcg_fig_6_10_b_"
+batch_index <- "0"
+sim_index   <- "0"
+
+df_ez_3 <- read.csv(paste(path, batch_index, "_", sim_index, ".csv", sep = ""))
+df_ez_3 <- df_ez_3[, c("Preys", "Predators")] / lattice_size
+head(df_ez_3)
+```
+
+```{r}
+path        <- "../../../../Datasets/capso/code_test/pcg_fig_6_10_c_"
+batch_index <- "0"
+sim_index   <- "0"
+
+df_ez_4 <- read.csv(paste(path, batch_index, "_", sim_index, ".csv", sep = ""))
+df_ez_4 <- df_ez_4[, c("Preys", "Predators")] / lattice_size
+head(df_ez_4)
+```
+
+```{r}
+path        <- "../../../../Datasets/capso/code_test/pcg_fig_6_10_d_"
+batch_index <- "0"
+sim_index   <- "0"
+
+df_ez_5 <- read.csv(paste(path, batch_index, "_", sim_index, ".csv", sep = ""))
+df_ez_5 <- df_ez_5[, c("Preys", "Predators")] / lattice_size
+head(df_ez_5)
+```
+
+4. Generate matching data for all values of the reproductive capacity of
+   predators using the mean field equations.
+
+```{r}
+mf_ez_2 <- rcapso_compute_mf(use_reg = FALSE, num_iter = 1000,
+                             psi0 = 1, phi0 = 0.001, alpha = 0.1,
+                             ey = 2, ez = 1)
+head(mf_ez_2)
+```
+
+```{r}
+mf_ez_3 <- rcapso_compute_mf(use_reg = FALSE, num_iter = 1000,
+                             psi0 = 1, phi0 = 0.001, alpha = 0.1,
+                             ey = 3, ez = 1)
+head(mf_ez_3)
+```
+
+```{r}
+mf_ez_4 <- rcapso_compute_mf(use_reg = FALSE, num_iter = 1000,
+                             psi0 = 1, phi0 = 0.001, alpha = 0.1,
+                             ey = 4, ez = 1)
+head(mf_ez_4)
+```
+
+```{r}
+mf_ez_5 <- rcapso_compute_mf(use_reg = FALSE, num_iter = 1000,
+                             psi0 = 1, phi0 = 0.001, alpha = 0.1,
+                             ey = 5, ez = 1)
+head(mf_ez_5)
+```
+
+5. Now plot the phase plot of each dataset.
+
+```{r, plot_fig_6_9_, fig.width = 5, fig.height = 4, dev = "svg"}
+colors <- c("Mean field" = "cornflowerblue",
+            "Simulation" = "black")
+
+ggplot() +
+    geom_path(data = df_ez_2, mapping = aes(x = Preys, y = Predators, color = "Mean field")) +
+    geom_path(data = mf_ez_2, mapping = aes(x = Preys, y = Predators, color = "Simulation")) +
+    labs(x = "Preys", y = "Predators", color = NULL) +
+    scale_color_manual(values = colors)
+
+ggplot() +
+    geom_path(data = df_ez_3, mapping = aes(x = Preys, y = Predators, color = "Mean field")) +
+    geom_path(data = mf_ez_3, mapping = aes(x = Preys, y = Predators, color = "Simulation")) +
+    labs(x = "Preys", y = "Predators", color = NULL) +
+    scale_color_manual(values = colors)
+
+ggplot() +
+    geom_path(data = df_ez_4, mapping = aes(x = Preys, y = Predators, color = "Mean field")) +
+    geom_path(data = mf_ez_4, mapping = aes(x = Preys, y = Predators, color = "Simulation")) +
+    labs(x = "Preys", y = "Predators", color = NULL) +
+    scale_color_manual(values = colors)
+
+ggplot() +
+    geom_path(data = df_ez_5, mapping = aes(x = Preys, y = Predators, color = "Mean field")) +
+    geom_path(data = mf_ez_5, mapping = aes(x = Preys, y = Predators, color = "Simulation")) +
+    labs(x = "Preys", y = "Predators", color = NULL) +
+    scale_color_manual(values = colors)
+```
+
+## Results
+
+* Verify that each attractor matches the corresponding phase plot in Figure
+  6.10.
