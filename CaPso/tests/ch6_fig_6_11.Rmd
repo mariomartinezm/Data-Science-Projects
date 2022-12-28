@@ -1,6 +1,6 @@
 ---
 title: Chapter 6, Figure 11
-author: Lina
+author: Mario Martínez Molina
 output:
     html_document:
         theme: united
