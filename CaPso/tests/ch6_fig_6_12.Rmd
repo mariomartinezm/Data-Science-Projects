@@ -1,0 +1,311 @@
+---
+title: Chapter 6, Figure 12
+author: Mario Martínez Molina
+output:
+    html_document:
+        theme: united
+        highlight: zenburn
+        df_print: paged
+---
+
+## Packages
+```{r}
+library(rcapso)
+library(dplyr)
+library(ggplot2)
+```
+
+## Requirements
+
+1. The QtCaPso program.
+2. The rcapso package.
+
+## Procedure
+
+1. Simulate a local CaPso on a lattice of $512 \times 256$ cells during 10000
+   seasons using the following parameters.
+```json
+{
+    "competitionFactor": 0.1,
+    "finalInertiaWeight": 0,
+    "fitnessRadius": 1,
+    "initialInertiaWeight": 0,
+    "initialNumberOfPredators": 262,
+    "initialNumberOfPreys": 1,
+    "predatorCognitiveFactor": 0,
+    "predatorMaximumSpeed": 0,
+    "predatorReproductionRadius": 1,
+    "predatorReproductiveCapacity": 1,
+    "predatorSocialFactor": 0,
+    "predatorSocialRadius": 1,
+    "preyReproductionRadius": 1,
+    "preyReproductiveCapacity": 1,
+    "type": "LOCAL"
+}
+```
+
+```{r}
+lattice_size <- (512 * 256)
+
+sim <- read.csv("../../../../Datasets/capso/code_test/pcg_fig_6_12_a_0_0.csv")
+sim <- sim %>%
+    transmute(Season,
+              preys_norm = Preys / lattice_size,
+              preds_norm = Predators / lattice_size)
+head(sim)
+```
+
+2. Generate matching data using the mean field equations and the first set of
+   parameters in Table 6.1.
+```{r}
+mf <- rcapso_compute_mf(use_reg = TRUE, num_iter = 500, psi0 = 1,
+                        phi0 = 0.001, alpha = 0.1, ey = 0.9404, ez = 0.8543,
+                        a = -0.5513, b = 0.9040, d = 1.2617, e = -0.0011)
+head(mf)
+```
+
+3. Plot both datasets and verify that the plot matches Figure 6.12.a.
+```{r, dev = "svg"}
+colors <- c("MF Preys" = "cornflowerblue",
+            "MF Predators" = "dark orange",
+            "Sim Preys" = "dark green",
+            "Sim Predators" = "dark red")
+
+sim %>%
+    slice_head(n = 500) %>%
+    ggplot() +
+    geom_line(mapping = aes(x = Season,
+                            y = preys_norm,
+                            color = "Sim Preys"),
+              linewidth = 1) +
+    geom_line(mapping = aes(x = Season,
+                            y = preds_norm,
+                            color = "Sim Predators"),
+              linewidth = 1) +
+    geom_line(data = mf, mapping = aes(x = seq_len(nrow(mf)),
+                                       y = Preys,
+                                       color = "MF Preys"),
+              linewidth = 1) +
+    geom_line(data = mf, mapping = aes(x = seq_len(nrow(mf)),
+                                       y = Predators,
+                                       color = "MF Predators"),
+              linewidth = 1) +
+    labs(x = "Time (Seasons)", y = "Population density", color = NULL) +
+    scale_color_manual(values = colors)
+```
+
+4. Repeat the simulation changing $\epsilon_{Z} = 2$ and $z = 5$.
+```{r}
+sim <- read.csv("../../../../Datasets/capso/code_test/pcg_fig_6_12_b_0_0.csv")
+sim <- sim %>%
+    transmute(Season,
+              preys_norm = Preys / lattice_size,
+              preds_norm = Predators / lattice_size)
+head(sim)
+```
+
+5. Generate matching data using the mean field equations and the second set of
+   parameters in Table 6.1.
+
+   **Note**: These parameters seem to be wrong, they will not produce the plot
+   shown in Figure 6.12.b. I have checked that the R implementation of the mean
+   field model and the original implementation in Python both produce the same
+   result, so it seems that I copied the wrong parameters in the table.
+```{r}
+mf <- rcapso_compute_mf(use_reg = TRUE, num_iter = 500, psi0 = 1,
+                        phi0 = 0.001, alpha = 0.1, ey = 0.9365, ez = 1.9563,
+                        a = -0.8537, b = 0.9854, d = 1.5994, e = -0.0840)
+head(mf)
+```
+
+6. Plot both datasets and verify that the plot matches Figure 6.12.b.
+```{r, dev = "svg"}
+
+sim %>%
+    slice_head(n = 500) %>%
+    ggplot() +
+    geom_line(mapping = aes(x = Season,
+                            y = preys_norm,
+                            color = "Sim Preys"),
+              linewidth = 1) +
+    geom_line(mapping = aes(x = Season,
+                            y = preds_norm,
+                            color = "Sim Predators"),
+              linewidth = 1) +
+    geom_line(data = mf, mapping = aes(x = seq_len(nrow(mf)),
+                                       y = Preys,
+                                       color = "MF Preys"),
+              linewidth = 1) +
+    geom_line(data = mf, mapping = aes(x = seq_len(nrow(mf)),
+                                       y = Predators,
+                                       color = "MF Predators"),
+              linewidth = 1) +
+    scale_color_manual(values = colors)
+```
+
+
+
+7. Repeat the simulation changing $\epsilon_{Y} = 3$ and $y = 1$.
+```{r}
+sim <- read.csv("../../../../Datasets/capso/code_test/pcg_fig_6_12_c_0_0.csv")
+sim <- sim %>%
+    transmute(Season,
+              preys_norm = Preys / lattice_size,
+              preds_norm = Predators / lattice_size)
+head(sim)
+```
+
+8. Generate matching data using the mean field equations and the third set of
+   parameters in Table 6.1:
+```{r}
+mf <- rcapso_compute_mf(use_reg = TRUE, num_iter = 500, psi0 = 1,
+                        phi0 = 0.001, alpha = 0.1, ey = 2.3234, ez = 0.9484,
+                        a = -0.8947, b = 0.9845, d = 1.1752, e = 0.0815)
+head(mf)
+```
+
+9. Plot both datasets and verify that the plot matches Figure 6.12.c.
+```{r}
+
+sim %>%
+    slice_head(n = 500) %>%
+    ggplot() +
+    geom_line(mapping = aes(x = Season,
+                            y = preys_norm,
+                            color = "Sim Preys"),
+              linewidth = 1) +
+    geom_line(mapping = aes(x = Season,
+                            y = preds_norm,
+                            color = "Sim Predators"),
+              linewidth = 1) +
+    geom_line(data = mf, mapping = aes(x = seq_len(nrow(mf)),
+                                       y = Preys,
+                                       color = "MF Preys"),
+              linewidth = 1) +
+    geom_line(data = mf, mapping = aes(x = seq_len(nrow(mf)),
+                                       y = Predators,
+                                       color = "MF Predators"),
+              linewidth = 1) +
+    labs(x = "Time (Seasons)", y = "Population density", color = NULL) +
+    scale_color_manual(values = colors)
+```
+
+## Appendix
+As noted, the data in Table 6.1 seems to be wrong since it does not produce the
+expected plot for the mean field model. To verify that the code is correct it
+will be necessary to recalculate $\epsilon_{Y}$,
+$\epsilon_{Z}$ using an exponential regression as well as the parameters $a$,
+$b$, $d$ and $e$ using a linear regression.
+
+1. Lets start by reloading the data for Figure 6.12.b as well as any other
+   column needed for the regression.
+```{r}
+sim <- read.csv("../../../../Datasets/capso/code_test/pcg_fig_6_12_b_0_0.csv")
+sim <- sim %>%
+    transmute(Season,
+              preys_norm = Preys / lattice_size,
+              preds_norm = Predators / lattice_size,
+              preds_dbpd = PredatorCountBeforePreyDeath / lattice_size,
+              preys_dp   = PreyDeathProbability,
+              preys_dbpd = PreyCountBeforePredatorDeath / lattice_size,
+              preds_dp   = PredatorDeathProbability,
+              preys_dbr  = PreyCountBeforeReproduction / lattice_size,
+              PreyBirthRate,
+              preds_dbr  = PredatorCountBeforeReproduction / lattice_size,
+              PredatorBirthRate)
+head(sim)
+```
+
+2. Determining $a$ and $b$ is straightforward, it is enough to use R's `lm()`
+   function passing in the data for the death probability of predators and the
+   corresponding density of preys. Note that I remove the first 1000 seasons in
+   order to remove transients.
+```{r}
+reg_data <- sim %>%
+    slice_tail(n = 9000)
+
+fit <- lm(preds_dp ~ preys_dbpd,
+          data = reg_data)
+summary(fit)
+```
+
+3. To determine $d$ and $e$ I follow the same procedure passing instead the
+   data for the death probability of preys and the matching density of
+   predators.
+```{r}
+fit <- lm(preys_dp ~ preds_dbpd,
+          data = reg_data)
+summary(fit)
+```
+
+4. The procedure to determine $\epsilon_{Y}$ and $\epsilon_{Z}$ is different.
+   According to the mean field equations, these parameters are exponentially
+   related to the prey and predator density respectively, such relationship
+   determines in turn the birth rate of prey and predators. For illustrative
+   purposes let's plot birth rate of prey versus the corresponding population
+   density.
+```{r}
+reg_data <- sim %>%
+    slice_tail(n = 9000)
+
+    ggplot(data = reg_data) +
+    geom_point(mapping = aes(x = preys_dbr, y = PreyBirthRate), alpha = 0.1)
+```
+
+5. To determine $\epsilon_{Y}$ I use R's `nls()` function, passing the formula
+   that relates the prey birth rate with the mean field equation in terms of
+   the density of preys, the cardinality of the reproduction neighborhood and
+   the probability that a single cell, containing an individual, is chosen for
+   reproduction.
+```{r}
+radius <- 1
+card   <- (2 * radius + 1) ^ 2 - 1
+p      <- 1 / card
+f      <- PreyBirthRate ~ (1 - preys_dbr) *
+                          (1 - (1 - p) ^ (epsilon * card * preys_dbr))
+fit    <- nls(f, data = reg_data, start = list(epsilon = 1))
+fit
+```
+
+6. The procedure for $\epsilon_{Z}$ is identical, I only need to use the birth
+   rate of predators and the corresponding population density.
+```{r}
+f   <- PredatorBirthRate ~ (1 - preds_dbr) *
+                           (1 - (1 - p) ^ (epsilon * card * preds_dbr))
+fit <- nls(f, data = reg_data, start = list(epsilon = 2))
+fit
+```
+
+7. Now I recompute the mean field data using these parameters.
+```{r}
+mf <- rcapso_compute_mf(use_reg = TRUE, num_iter = 500, psi0 = 1,
+                        phi0 = 0.001, alpha = 0.1, ey = 0.8766, ez = 1.834,
+                        a = -0.842556, b = 0.980270, d = 1.602430, e = 0.083569)
+head(mf)
+```
+
+8. Finally, we can compare the mean field data against the corresponding
+   computer simulation.
+```{r}
+sim %>%
+    slice_head(n = 500) %>%
+    ggplot() +
+    geom_line(mapping = aes(x = Season,
+                            y = preys_norm,
+                            color = "Sim Preys"),
+              linewidth = 1) +
+    geom_line(mapping = aes(x = Season,
+                            y = preds_norm,
+                            color = "Sim Predators"),
+              linewidth = 1) +
+    geom_line(data = mf, mapping = aes(x = seq_len(nrow(mf)),
+                                       y = Preys,
+                                       color = "MF Preys"),
+              linewidth = 1) +
+    geom_line(data = mf, mapping = aes(x = seq_len(nrow(mf)),
+                                       y = Predators,
+                                       color = "MF Predators"),
+              linewidth = 1) +
+    labs(x = "Time (Seasons)", y = "Population density", color = NULL) +
+    scale_color_manual(values = colors)
+```
