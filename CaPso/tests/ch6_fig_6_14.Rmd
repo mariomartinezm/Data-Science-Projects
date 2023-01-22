@@ -1,0 +1,193 @@
+---
+title: Chapter 6, Figure 14
+author: Mario Martínez Molina
+output:
+    html_document:
+        theme: united
+        highlight: zenburn
+        df_print: paged
+---
+
+##  Packages
+```{r}
+library(rcapso)
+library(dplyr)
+library(ggplot2)
+```
+
+## Requirements
+1. The QtCaPso program.
+2. The rcapso package
+
+## Procedure
+
+1. Simulate a local CaPso model on a lattice of $512 \times 512$ cells during
+   10000 seasons using the following paremeters.
+```json
+{
+    "competitionFactor": 0.05,
+    "finalInertiaWeight": 0.2,
+    "fitnessRadius": 3,
+    "initialInertiaWeight": 0.9,
+    "initialNumberOfPredators": 262,
+    "initialNumberOfPreys": 0.9,
+    "predatorCognitiveFactor": 1,
+    "predatorMaximumSpeed": 20,
+    "predatorReproductionRadius": 1,
+    "predatorReproductiveCapacity": 2,
+    "predatorSocialFactor": 1,
+    "predatorSocialRadius": 7,
+    "preyReproductionRadius": 3,
+    "preyReproductiveCapacity": 1,
+    "type": "LOCAL"
+}
+```
+
+2. Load the data in a data frame and normalize the densities of preys and
+   predators.
+```{r}
+lattice_size <- 512 * 512
+
+dfb <- read.csv("../../../../Datasets/capso/code_test/pcg_fig_6_13_b_0_0.csv") %>%
+    transmute(Season,
+              preys_norm = Preys / lattice_size,
+              preds_norm = Predators / lattice_size,
+              preds_dbpd = PredatorCountBeforePreyDeath / lattice_size,
+              preys_dp   = PreyDeathProbability,
+              preys_dbpd = PreyCountBeforePredatorDeath / lattice_size,
+              preds_dp   = PredatorDeathProbability,
+              preys_dbr  = PreyCountBeforeReproduction / lattice_size,
+              PreyBirthRate,
+              preds_dbr  = PredatorCountBeforeReproduction / lattice_size,
+              PredatorBirthRate)
+head(dfb)
+```
+
+3. Obtain the adjusted parameters for the mean field model.
+```{r}
+params <- rcapso_adjust_parameters(dfb)
+params
+```
+
+4. Compute the mean field model using the adjusted parameters.
+```{r}
+mfb <- rcapso_compute_mf(use_reg = TRUE, num_iter = 500, psi0 = 1,
+                         phi0 = 0.001, alpha = 0.1, ey = params["ey"],
+                         ez = params["ez"], a = params["a"],
+                         b = params["b"], d = params["d"],
+                         e = params["e"])
+head(mfb)
+```
+
+5. Simulate a local CaPso model on a lattice of $512 \times 512$ cells during
+   10000 seasons using the following paremeters.
+```json
+{
+    "competitionFactor": 0.05,
+    "finalInertiaWeight": 0.2,
+    "fitnessRadius": 3,
+    "initialInertiaWeight": 0.9,
+    "initialNumberOfPredators": 262,
+    "initialNumberOfPreys": 0.9,
+    "predatorCognitiveFactor": 1,
+    "predatorMaximumSpeed": 20,
+    "predatorReproductionRadius": 1,
+    "predatorReproductiveCapacity": 2,
+    "predatorSocialFactor": 2,
+    "predatorSocialRadius": 7,
+    "preyReproductionRadius": 3,
+    "preyReproductiveCapacity": 1,
+    "type": "LOCAL"
+}
+```
+
+6. Load the data in a data frame and normalize the densities of preys and
+   predators.
+```{r}
+lattice_size <- 512 * 512
+
+df2 <- read.csv("../../../../Datasets/capso/code_test/pcg_fig_6_14_b_0_0.csv") %>%
+    transmute(Season,
+              preys_norm = Preys / lattice_size,
+              preds_norm = Predators / lattice_size,
+              preds_dbpd = PredatorCountBeforePreyDeath / lattice_size,
+              preys_dp   = PreyDeathProbability,
+              preys_dbpd = PreyCountBeforePredatorDeath / lattice_size,
+              preds_dp   = PredatorDeathProbability,
+              preys_dbr  = PreyCountBeforeReproduction / lattice_size,
+              PreyBirthRate,
+              preds_dbr  = PredatorCountBeforeReproduction / lattice_size,
+              PredatorBirthRate)
+head(dfb)
+```
+
+7. Obtain the adjusted parameters for the mean field model.
+```{r}
+params <- rcapso_adjust_parameters(df2)
+params
+```
+
+8. Compute the mean field model using the adjusted parameters.
+```{r}
+mf2 <- rcapso_compute_mf(use_reg = TRUE, num_iter = 500, psi0 = 1,
+                         phi0 = 0.001, alpha = 0.1, ey = params["ey"],
+                         ez = params["ez"], a = params["a"],
+                         b = params["b"], d = params["d"],
+                         e = params["e"])
+head(mf2)
+```
+
+9. Plot the results.
+```{r dev="svg"}
+colors <- c("MF Preys" = "cornflowerblue",
+            "MF Predators" = "dark orange",
+            "Sim Preys" = "dark green",
+            "Sim Predators" = "dark red")
+
+dfb %>%
+    slice_head(n = 500) %>%
+    ggplot() +
+    geom_line(mapping = aes(x = Season,
+                            y = preys_norm,
+                            color = "Sim Preys")) +
+    geom_line(mapping = aes(x = Season,
+                            y = preds_norm,
+                            color = "Sim Predators")) +
+    geom_line(data = mfb, mapping = aes(x = seq_len(nrow(mfb)),
+                                        y = Preys,
+                                        color = "MF Preys")) +
+    geom_line(data = mfb, mapping = aes(x = seq_len(nrow(mfb)),
+                                        y = Predators,
+                                        color = "MF Predators")) +
+    labs(x = "Time (Seasons)", y = "Population density", color = NULL) +
+    scale_color_manual(values = colors)
+```
+
+```{r dev="svg"}
+colors <- c("MF Preys" = "cornflowerblue",
+            "MF Predators" = "dark orange",
+            "Sim Preys" = "dark green",
+            "Sim Predators" = "dark red")
+
+df2 %>%
+    slice_head(n = 500) %>%
+    ggplot() +
+    geom_line(mapping = aes(x = Season,
+                            y = preys_norm,
+                            color = "Sim Preys")) +
+    geom_line(mapping = aes(x = Season,
+                            y = preds_norm,
+                            color = "Sim Predators")) +
+    geom_line(data = mf2, mapping = aes(x = seq_len(nrow(mfb)),
+                                        y = Preys,
+                                        color = "MF Preys")) +
+    geom_line(data = mf2, mapping = aes(x = seq_len(nrow(mfb)),
+                                        y = Predators,
+                                        color = "MF Predators")) +
+    labs(x = "Time (Seasons)", y = "Population density", color = NULL) +
+    scale_color_manual(values = colors)
+```
+
+## Results
+
+* Verify that the plots match Figure 6.14.
