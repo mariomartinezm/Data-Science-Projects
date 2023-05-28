@@ -1,0 +1,142 @@
+---
+title: Ergodicity of the CaPso model
+author: Mario Martínez Molina
+output:
+    html_document:
+        theme: united
+        highlight: zenburn
+        df_print: paged
+---
+
+## Packages
+```{r}
+library(rcapso)
+library(ggplot2)
+library(dplyr)
+```
+
+```{r}
+datasets <- Sys.getenv(c("DATASETS"))
+```
+
+## Introduction
+
+Orbits belonging to a chaotic dynamical system are highly unstable (in a
+chaotic dynamical system orbits diverge exponentially). However, from a
+statistical perspective some form of predictability can emerge. To illustrate
+this idea we can divide the $[0, 1]$ interval in $N$ subintervals, and
+calculate the number of points in an orbit of the CaPso model in each interval.
+For such purpose, I've selected the parameters of Figure 6.9 which result in an
+orbit similar to a limit cycle, albeit somewhat unstable. Note that I'm
+removing the first 1000 points to get rid off any transient.
+
+```{r}
+mf_ez_2 <- rcapso_compute_mf(use_reg = FALSE, num_iter = 10000,
+                             psi0 = 1, phi0 = 0.001, alpha = 0.1,
+                             ey = 1, ez = 2) %>%
+slice_tail(n = 9000)
+head(mf_ez_2)
+```
+
+```{r}
+filename <- paste(datasets[1], "capso/code_test/pcg_fig_6_9_a_0_0.csv",
+                  sep = "\\")
+lattice_size <- 262144
+
+sm_ez_2 <- read.csv(filename) %>%
+    slice_tail(n = 9000) %>%
+    transmute(preys_norm = Preys / lattice_size,
+              preds_norm = Predators / lattice_size)
+head(sm_ez_2)
+```
+
+```{r, dev = "svg"}
+ggplot(data = mf_ez_2) +
+    geom_path(mapping = aes(x = Preys, y = Predators)) +
+    theme(aspect.ratio = 1)
+```
+
+```{r, dev = "svg"}
+ggplot(data = sm_ez_2) +
+    geom_path(mapping = aes(x = preys_norm, y = preds_norm)) +
+    theme(aspect.ratio = 1)
+```
+
+If the orbit were completely random, then an histogram of the points in the
+orbit, as described before, would approximate a uniform distribution. Instead,
+we can see that in an orbit of the CaPso model some points are more likely to
+appear than others.
+
+```{r, dev = "svg"}
+ggplot(data = mf_ez_2, aes(x = Preys)) +
+    geom_histogram(aes(y = after_stat(density)), binwidth = 0.005) +
+    geom_density(linewidth = 1) +
+    theme(aspect.ratio = 9 / 16)
+```
+
+```{r, dev = "svg"}
+ggplot(data = sm_ez_2, aes(x = preys_norm)) +
+    geom_histogram(aes(y = after_stat(density)), binwidth = 0.005) +
+    geom_density(linewidth = 1) +
+    theme(aspect.ratio = 9 / 16)
+```
+
+For the mean field model the orbits are restricted to the interval $[0.2218707,
+0.6561584]$, meanwhile simulations are restricted to the interval $[0.3237381,
+0.6927452]$. Nevertheless, it appears that the singularities of the orbit are
+dense in this interval.
+
+```{r}
+columns <- c("Preys", "Predators")
+sample_rows <- c(190:200)
+
+rm(ergdf)
+for (file in list.files(c(paste(datasets[1],
+                                "capso/ergodicity2",
+                                sep = "\\")))) {
+    filepath <- paste(datasets[1], "capso/ergodicity2", file, sep = "\\")
+
+    if (!exists("ergdf")) {
+        ergdf <- read.csv(filepath, header = FALSE,
+                          col.names = columns)
+        ergdf <- ergdf[sample_rows, ]
+    } else {
+        tmp   <- read.csv(filepath, header = FALSE,
+                          col.names = columns)
+        ergdf <- rbind(ergdf, tmp[sample_rows, ])
+        rm(tmp)
+    }
+}
+
+ergdf
+```
+
+```{r}
+ergnorm <- ergdf %>%
+    transmute(preys_norm = as.numeric(Preys) / lattice_size,
+              preds_norm = as.numeric(Predators) / lattice_size)
+ergnorm
+```
+
+```{r}
+hist(ergnorm$preys_norm, freq = FALSE, xlab = "x(t)", ylab = "density",
+     br = seq(0, 1, by = 0.005))
+```
+
+```{r, dev = "svg"}
+test <- read.csv(paste(datasets[1], "capso/ergodicity2", "density_0.492000.csv",
+                       sep = "\\"))
+
+test <- test %>%
+    slice_tail(n = 100) %>%
+    transmute(preys_norm = Preys / lattice_size,
+              preds_norm = Predators / lattice_size)
+
+test
+```
+
+```{r}
+ggplot(data = test) +
+    geom_point(mapping = aes(x = preys_norm, y = preds_norm)) +
+    theme(aspect.ratio = 1)
+```
